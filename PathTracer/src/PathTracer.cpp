@@ -17,50 +17,46 @@
 #include "stb_image_write.h"
 
 
-PathTracer::PathTracer(const RenderSettings &settings, const Scene &scene) :
+PathTracer::PathTracer(const RenderSettings &settings, Scene &scene) :
 	settings(settings), scene(scene) {
 }
 
 PathTracer::~PathTracer() {
 }
 
-void PathTracer::renderScene() const {
+void PathTracer::renderScene() {
+	scene.initializeBvh();
+
 	byte *image = new byte[settings.width * settings.height * 3];
 	byte *ptr = image;
 
 	Ray ray;
 	Vec3 color;
 
-	std::cout << "Rendering " << scene.getObjectCount() << " objects to " << settings.outputFileName << std::endl <<
-		"Dimensions: " << settings.width << "x" << settings.height << std::endl <<
-		"Samples: " << settings.samples << std::endl <<
-		"Max ray depth: " << settings.maxRayDepth << std::endl << std::endl;
-
 	const uint32 totalPixels = settings.width * settings.height;
-	const uint32 updateIntervalMs = 2000;
-	uint32 currentPixel = 0;
+	const float updateInterval = 5.0f;
 	uint32 currentPixelOnLastUpdate = 0;
 	
-	Timer timer;
-	timer.start();
+	Timer updateTimer;
+	updateTimer.start();
+	statistics.timer.start();
 
 	for (int y = settings.height - 1; y >= 0; --y) {
 		for (uint32 x = 0; x < settings.width; ++x) {
 			
-			if (timer.getElapsedMilis() > updateIntervalMs) {
-				uint32 pixelsRendered = currentPixel - currentPixelOnLastUpdate;
-				currentPixelOnLastUpdate = currentPixel;
+			if (updateTimer.getElapsedSeconds() > updateInterval) {
+				uint32 pixelsRendered = statistics.totalRenderedPixels - currentPixelOnLastUpdate;
+				currentPixelOnLastUpdate = statistics.totalRenderedPixels;
 
-				uint32 timePerPixelMs = updateIntervalMs / pixelsRendered;
-				uint32 estimatedTimeMs = (totalPixels - currentPixel) * timePerPixelMs;
+				float timePerPixel = updateInterval / static_cast<float>(pixelsRendered);
+				float estimatedTime = static_cast<float>((totalPixels - statistics.totalRenderedPixels)) * timePerPixel;
 				
 				std::cout << "Render progress: " <<
-					static_cast<float>(currentPixel) / static_cast<float>(totalPixels) * 100.0f
-					<< "% (estimated time to finish: " <<
-					static_cast<float>(estimatedTimeMs) / 1000.0f / 60.0f << " minutes)" <<
+					static_cast<float>(statistics.totalRenderedPixels) / static_cast<float>(totalPixels) * 100.0f <<
+					"% (estimated time to finish: " << static_cast<float>(estimatedTime) << " seconds)" <<
 					std::endl;
 
-				timer.start();
+				updateTimer.start();
 			}
 					
 			color.set(0.0f);
@@ -71,6 +67,7 @@ void PathTracer::renderScene() const {
 
 				ray = scene.getCamera()->getRay(u, v);
 				color += computeColor(ray, 0);
+				statistics.primaryRays++;
 			}
 
 			color /= static_cast<float>(settings.samples);
@@ -79,7 +76,7 @@ void PathTracer::renderScene() const {
 			*ptr++ = static_cast<byte>(255.99f * color.g);
 			*ptr++ = static_cast<byte>(255.99f * color.b);
 
-			currentPixel++;
+			statistics.totalRenderedPixels++;
 		}
 	}
 
@@ -87,19 +84,27 @@ void PathTracer::renderScene() const {
 	delete[] image;
 }
 
-Vec3 PathTracer::computeColor(Ray &ray, uint32 depth) const {
+Vec3 PathTracer::computeColor(Ray &ray, uint32 depth) {
 
 	HitRecord hitRecord;
+	statistics.maxDepthReached = Utils::max(statistics.maxDepthReached, depth);
 
-	if (scene.hit(ray, FLOAT_BIAS, FLT_MAX, hitRecord)) {
+	if (scene.hit(ray, FLOAT_BIAS, FLT_MAX, hitRecord, statistics)) {
 
 		Ray scattered;
 		Vec3 attenuation;
 
-		if (depth < settings.maxRayDepth && hitRecord.material->scatter(ray, hitRecord, attenuation, scattered)) {
-			return attenuation * computeColor(scattered, depth + 1);
+		if (depth < settings.maxRayDepth) {
+			if (hitRecord.material->scatter(ray, hitRecord, attenuation, scattered)) {
+				statistics.scatteredRays++;
+				return attenuation * computeColor(scattered, depth + 1);
+			}
+			else {
+				return Vec3(0.0f);
+			}
 		}
 		else {
+			statistics.raysReachedMaxDepth++;
 			return Vec3(0.0f);
 		}
 	}
@@ -107,4 +112,17 @@ Vec3 PathTracer::computeColor(Ray &ray, uint32 depth) const {
 	ray.direction.normalize();
 	float t = 0.5f * (ray.direction.y + 1.0f);
 	return (1.0f - t) * Vec3(1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
+}
+
+void PathTracer::printPreRender() const {
+	std::cout << "--------------------------------------------" << std::endl;
+	std::cout << "Rendering " << scene.getObjectCount() << " objects" << std::endl;
+	std::cout << settings << std::endl;
+	std::cout << "--------------------------------------------" << std::endl;
+}
+
+void PathTracer::printPostRender() const {
+	std::cout << "--------------------------------------------" << std::endl;
+	std::cout << statistics << std::endl;
+	std::cout << "--------------------------------------------" << std::endl;
 }

@@ -22,4 +22,7 @@ namespace Utils
 
 	inline float random0To1() { return dist0to1(rng); }
 	inline float randomNeg1To1() { return distNeg1to1(rng); }
+
+	template<class T> inline T min(T a, T b) { return a < b ? a : b; }
+	template<class T> inline T max(T a, T b) { return a > b ? a : b; }
 };

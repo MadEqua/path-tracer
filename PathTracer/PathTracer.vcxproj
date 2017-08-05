@@ -113,13 +113,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\AABB.cpp" />
+    <ClCompile Include="src\BvhNode.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Dielectric.cpp" />
     <ClCompile Include="src\Lambertian.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Metal.cpp" />
-    <ClCompile Include="src\Object.cpp" />
     <ClCompile Include="src\PathTracer.cpp" />
     <ClCompile Include="src\Ray.cpp" />
     <ClCompile Include="src\Scene.cpp" />
@@ -129,8 +130,11 @@
     <ClCompile Include="src\Vec3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AABB.h" />
+    <ClInclude Include="src\BvhNode.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Dielectric.h" />
+    <ClInclude Include="src\Hitable.h" />
     <ClInclude Include="src\HitRecord.h" />
     <ClInclude Include="src\Lambertian.h" />
     <ClInclude Include="src\Material.h" />
@@ -138,6 +142,7 @@
     <ClInclude Include="src\Object.h" />
     <ClInclude Include="src\PathTracer.h" />
     <ClInclude Include="src\Ray.h" />
+    <ClInclude Include="src\RenderStatistics.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Sphere.h" />
     <ClInclude Include="src\stb_image_write.h" />

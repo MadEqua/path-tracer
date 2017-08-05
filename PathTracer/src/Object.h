@@ -1,16 +1,17 @@
 #pragma once
 
-class Ray;
-class Material;
-struct HitRecord;
+#include "Hitable.h"
 
-class Object
+class Material;
+
+class Object : public Hitable
 {
 public:
-	Object(Material *material);
-	virtual ~Object();
+	Object(Material *material) : material(material) {}
+	virtual ~Object() {}
 
-	virtual bool hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord) const = 0;
+	virtual bool hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, RenderStatistics &statistics) const = 0;
+	virtual bool boundingBox(float t0, float t1, AABB &aabb) const = 0;
 
 protected:
 	Material *material;

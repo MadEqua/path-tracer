@@ -2,7 +2,6 @@
 
 #include "Vec3.h"
 
-class Ray;
 class Material;
 
 struct HitRecord {

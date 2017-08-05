@@ -15,8 +15,8 @@ void initScene(Scene &scene) {
 	scene.addMaterial(lam);
 	scene.addObject(new Sphere(Vec3(0, -1000, 0), 1000.0f, lam));
 	
-	for (int a = -11; a < 11; ++a) {
-		for (int b = -11; b < 11; ++b) {
+	for (int a = -21; a < 9; ++a) {
+		for (int b = -15; b < 8; ++b) {
 			float chooseMaterial = Utils::random0To1();
 			Vec3 center(a + 0.9f * Utils::random0To1(), 0.2f, b + 0.9f * Utils::random0To1());
 			if ((center - Vec3(4, 0.2f, 0)).length() > 0.9f) {
@@ -31,7 +31,7 @@ void initScene(Scene &scene) {
 					material = new Metal(Vec3(0.5f * (1.0f + Utils::random0To1()),
 						0.5f * (1.0f + Utils::random0To1()),
 						0.5f * (1.0f + Utils::random0To1())),
-						0.5f * Utils::random0To1());
+						0.3f * Utils::random0To1());
 				}
 				else {
 					material = new Dielectric(1.5f);
@@ -59,11 +59,11 @@ void initScene(Scene &scene) {
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 1200;
-	settings.height = 600;
+	settings.width = 1980;
+	settings.height = 1080;
 	settings.samples = 100;
 	settings.maxRayDepth = 50;
-	settings.outputFileName = "output12.bmp";
+	settings.outputFileName = "output16.bmp";
 	
 	Scene scene;
 	initScene(scene);
@@ -72,11 +72,14 @@ int main(int argc, char **argv) {
 	Vec3 lookat(0, 0, 0);
 	Camera *camera = new Camera(lookfrom, lookat, Vec3(0, 1, 0),
 		20.0f, (float)settings.width / (float)settings.height,
-		0.1f, (lookfrom - lookat).length());
+		0.05f, (lookfrom - lookat).length());
 	scene.setCamera(camera);
 
 	PathTracer pathTracer(settings, scene);
+	pathTracer.printPreRender();
 	pathTracer.renderScene();	
-	
+	pathTracer.printPostRender();
+
+	std::cin.get();
 	return 0;
 }
