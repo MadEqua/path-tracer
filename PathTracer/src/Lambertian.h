@@ -6,9 +6,7 @@
 class Lambertian :public Material
 {
 public:
-	Lambertian(const Vec3 &albedo);
-	virtual ~Lambertian();
-
+	explicit Lambertian(const Vec3 &albedo);
 	virtual bool scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const override;
 
 private:

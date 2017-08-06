@@ -7,9 +7,8 @@ class Ray;
 class AABB
 {
 public:
-	AABB();
+	AABB() = default;
 	AABB(const Vec3 &min, const Vec3 &max);
-	~AABB();
 
 	inline void set(const Vec3 &min, const Vec3 &max) { this->min = min; this->max = max; }
 	void enclose(const AABB &aabb);
@@ -18,4 +17,3 @@ public:
 
 	Vec3 min, max;
 };
-

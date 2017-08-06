@@ -31,9 +31,6 @@ Camera::Camera(const Vec3 &position, const Vec3 &lookAt, const Vec3 vUp,
 	verticalAxis = 2.0f * halfHeight * focusDistance * cameraY;
 }
 
-Camera::~Camera() {
-}
-
 Ray Camera::getRay(float x, float y) const {
 	Vec3 radius = lensRadius * Utils::randomInUnitDisk();
 	Vec3 offset = cameraX * radius.x + cameraY * radius.y;

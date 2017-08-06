@@ -11,9 +11,6 @@ Sphere::Sphere(const Vec3 &center, float radius, Material *material) :
 	center(center), radius(radius) {
 }
 
-Sphere::~Sphere() {
-}
-
 bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, RenderStatistics &statistics) const {
 	statistics.objectIntersectionsComputed++;
 	

@@ -4,13 +4,7 @@
 #include "Utils.h"
 
 
-AABB::AABB() {
-}
-
-AABB::AABB(const Vec3 & min, const Vec3 & max) : min(min), max(max) {
-}
-
-AABB::~AABB() {
+AABB::AABB(const Vec3 &min, const Vec3 &max) : min(min), max(max) {
 }
 
 void AABB::enclose(const AABB & aabb) {

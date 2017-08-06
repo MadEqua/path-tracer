@@ -8,9 +8,6 @@
 Dielectric::Dielectric(float refractionIndex) : refractionIndex(refractionIndex) {
 }
 
-Dielectric::~Dielectric() {
-}
-
 bool Dielectric::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const {
 	Vec3 outwardNormal;
 	Vec3 reflected = Utils::reflect(in.direction, hitRecord.normal);

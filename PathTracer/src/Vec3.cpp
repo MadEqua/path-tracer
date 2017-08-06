@@ -10,10 +10,6 @@ Vec3::Vec3(float x, float y, float z) :
 	x(x), y(y), z(z) {
 }
 
-Vec3::~Vec3() {
-
-}
-
 void Vec3::normalize() {
 	float k = 1.0f / sqrt(x*x + y*y + z*z);
 	x *= k;

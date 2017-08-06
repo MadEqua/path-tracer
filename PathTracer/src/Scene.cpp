@@ -2,18 +2,16 @@
 
 #include <iostream>
 
-#include "HitRecord.h"
-#include "Object.h"
 #include "Material.h"
 #include "Camera.h"
-#include "AABB.h"
 #include "BvhNode.h"
 
 Scene::Scene() : rootBvhNode(nullptr) {
 }
 
 Scene::~Scene() {
-	delete rootBvhNode; //This will delete all objects and BvhNodes
+	if(rootBvhNode != nullptr)
+		delete rootBvhNode; //This will delete all objects and BvhNodes
 
 	for (const Material *mat : materials)
 		delete mat;

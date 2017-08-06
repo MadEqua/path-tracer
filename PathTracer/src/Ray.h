@@ -5,9 +5,8 @@
 class Ray 
 {
 public:
-	Ray();
+	Ray() = default;
 	Ray(const Vec3 &origin, const Vec3 &direction);
-	~Ray();
 
 	Vec3 origin;
 	Vec3 direction;

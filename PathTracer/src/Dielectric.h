@@ -5,9 +5,7 @@
 class Dielectric : public Material
 {
 public:
-	Dielectric(float refractionIndex);
-	virtual ~Dielectric();
-
+	explicit Dielectric(float refractionIndex);
 	virtual bool scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const override;
 
 private:

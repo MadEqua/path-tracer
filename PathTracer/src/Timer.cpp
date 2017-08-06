@@ -1,10 +1,6 @@
 #include "Timer.h"
 
-Timer::Timer() :
-	started(false) {
-}
-
-Timer::~Timer() {
+Timer::Timer() : started(false) {
 }
 
 void Timer::start() {

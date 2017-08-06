@@ -7,7 +7,6 @@ class Timer
 {
 public:
 	Timer();
-	~Timer();
 
 	void start();
 	float getElapsedSeconds() const;

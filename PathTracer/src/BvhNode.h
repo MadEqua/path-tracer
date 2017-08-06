@@ -9,7 +9,7 @@
 class Object;
 
 struct Comparator {
-	Comparator(int axis);
+	explicit Comparator(int axis);
 	int axis;
 	bool operator() (const Object *i, const Object *j);
 };

@@ -9,7 +9,6 @@ public:
 	Vec3();
 	explicit Vec3(float v);
 	Vec3(float x, float y, float z);
-	~Vec3();
 
 	union {
 		struct {

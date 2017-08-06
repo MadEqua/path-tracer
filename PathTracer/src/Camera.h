@@ -9,7 +9,6 @@ public:
 	Camera(const Vec3 &position, const Vec3 &lookAt, const Vec3 vUp,
 		float vFov, float aspectRatio,
 		float aperture, float focusDistance);
-	~Camera();
 
 	//x, y are the near plane coords, between 0 and 1
 	Ray getRay(float x, float y) const;

@@ -119,7 +119,6 @@
     <ClCompile Include="src\Dielectric.cpp" />
     <ClCompile Include="src\Lambertian.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Metal.cpp" />
     <ClCompile Include="src\PathTracer.cpp" />
     <ClCompile Include="src\Ray.cpp" />

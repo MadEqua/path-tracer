@@ -8,7 +8,6 @@ class Object;
 class Camera;
 class Material;
 struct HitRecord;
-class AABB;
 class BvhNode;
 struct RenderStatistics;
 
