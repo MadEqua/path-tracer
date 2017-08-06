@@ -1,6 +1,7 @@
 #include "PathTracer.h"
 
 #include <iostream>
+#include <thread>
 
 #include "Ray.h"
 #include "Vec3.h"
@@ -18,71 +19,76 @@
 
 
 PathTracer::PathTracer(const RenderSettings &settings, Scene &scene) :
-	settings(settings), scene(scene) {
+	settings(settings), 
+	scene(scene),
+	threadPool(settings.threads),
+	threadStatistics(settings.threads) {
+	
+	scene.initializeBvh();
+	imageBuffer = new byte[settings.width * settings.height * 3];
+	currentTile = 0;
 }
 
 PathTracer::~PathTracer() {
+	delete[] imageBuffer;
 }
 
 void PathTracer::renderScene() {
-	scene.initializeBvh();
 
-	byte *image = new byte[settings.width * settings.height * 3];
+	for (uint32 i = 0; i < settings.threads; ++i) {
+		threadPool[i] = std::thread(&PathTracer::renderTile, this, i);
+	}
+
+	for (uint32 i = 0; i < settings.threads; ++i) {
+		threadPool[i].join();
+	}
+
+	stbi_write_bmp(settings.outputFileName.c_str(), settings.width, settings.height, 3, imageBuffer);
+}
+
+void PathTracer::renderTile(int threadId) {
+	
+	RenderStatistics &statistics = threadStatistics[threadId];
+	
+	const uint32 numXtiles = static_cast<int>(ceil(static_cast<float>(settings.width) / static_cast<float>(settings.tileSize)));
+	const uint32 numYtiles = static_cast<int>(ceil(static_cast<float>(settings.height) / static_cast<float>(settings.tileSize)));
+	const uint32 numTiles = numXtiles * numYtiles;
 
 	Ray ray;
 	Vec3 color;
 
-	const int numXtiles = static_cast<int>(ceil(static_cast<float>(settings.width) / static_cast<float>(settings.tileSize)));
-	const int numYtiles = static_cast<int>(ceil(static_cast<float>(settings.height) / static_cast<float>(settings.tileSize)));
-	const int numTiles = numXtiles * numYtiles;
-
-	const uint32 totalPixels = settings.width * settings.height;
-	const float updateInterval = 5.0f;
-	uint32 totalPixelsOnLastUpdate = 0;
-
-	Timer updateTimer;
-	updateTimer.start();
 	statistics.timer.start();
 
-	for (int tile = 0; tile < numTiles; tile++) {
-		
+	while(1) {
+
+		tileMutex.lock();
+		uint32 tile = currentTile++;
+		tileMutex.unlock();
+
+		if (tile >= numTiles) break;
+
 		const int tileOffsetX = settings.tileSize * (tile % numXtiles);
 		const int tileOffsetY = settings.tileSize * (tile / numXtiles);
 
 		for (uint32 y = tileOffsetY; y < tileOffsetY + settings.tileSize && y < settings.height; y++) {
 			for (uint32 x = tileOffsetX; x < tileOffsetX + settings.tileSize && x < settings.width; x++) {
 
-				if (updateTimer.getElapsedSeconds() > updateInterval) {
-					uint32 pixelsRendered = statistics.totalRenderedPixels - totalPixelsOnLastUpdate;
-					totalPixelsOnLastUpdate = statistics.totalRenderedPixels;
-
-					float timePerPixel = updateInterval / static_cast<float>(pixelsRendered);
-					float estimatedTime = static_cast<float>((totalPixels - statistics.totalRenderedPixels)) * timePerPixel;
-
-					std::cout << "Render progress: " <<
-						static_cast<float>(statistics.totalRenderedPixels) / static_cast<float>(totalPixels) * 100.0f <<
-						"% (estimated time to finish: " << static_cast<float>(estimatedTime) << " seconds)" <<
-						std::endl;
-
-					updateTimer.start();
-				}
-
 				color.set(0.0f);
 
 				for (uint32 s = 0; s < settings.samples; ++s) {
 					float u = static_cast<float>(x + Utils::random0To1()) / static_cast<float>(settings.width - 1.0f);
 					float v = static_cast<float>(y + Utils::random0To1()) / static_cast<float>(settings.height - 1.0f);
-					
+
 					ray = scene.getCamera()->getRay(u, v);
-					color += computeColor(ray, 0);
+					color += computeColor(ray, 0, statistics);
 					statistics.primaryRays++;
 				}
 
 				color /= static_cast<float>(settings.samples);
 				Utils::rgbToSrgb(color);
-				
+
 				uint32 invertedY = settings.height - 1 - y;
-				byte *ptr = image + ((settings.width * invertedY) + x) * 3;
+				byte *ptr = imageBuffer + ((settings.width * invertedY) + x) * 3;
 				*ptr++ = static_cast<byte>(255.99f * color.r);
 				*ptr++ = static_cast<byte>(255.99f * color.g);
 				*ptr = static_cast<byte>(255.99f * color.b);
@@ -90,62 +96,11 @@ void PathTracer::renderScene() {
 				statistics.totalRenderedPixels++;
 			}
 		}
+		statistics.totalRenderedTiles++;
 	}
-
-
-
-
-
-
-
-
-
-
-
-	/*for (int y = settings.height - 1; y >= 0; --y) {
-		for (uint32 x = 0; x < settings.width; ++x) {
-			
-			if (updateTimer.getElapsedSeconds() > updateInterval) {
-				uint32 pixelsRendered = statistics.totalRenderedPixels - currentPixelOnLastUpdate;
-				currentPixelOnLastUpdate = statistics.totalRenderedPixels;
-
-				float timePerPixel = updateInterval / static_cast<float>(pixelsRendered);
-				float estimatedTime = static_cast<float>((totalPixels - statistics.totalRenderedPixels)) * timePerPixel;
-				
-				std::cout << "Render progress: " <<
-					static_cast<float>(statistics.totalRenderedPixels) / static_cast<float>(totalPixels) * 100.0f <<
-					"% (estimated time to finish: " << static_cast<float>(estimatedTime) << " seconds)" <<
-					std::endl;
-
-				updateTimer.start();
-			}
-					
-			color.set(0.0f);
-
-			for (uint32 s = 0; s < settings.samples; ++s) {
-				float u = static_cast<float>(x + Utils::random0To1()) / static_cast<float>(settings.width - 1.0f);
-				float v = static_cast<float>(y + Utils::random0To1()) / static_cast<float>(settings.height - 1.0f);
-
-				ray = scene.getCamera()->getRay(u, v);
-				color += computeColor(ray, 0);
-				statistics.primaryRays++;
-			}
-
-			color /= static_cast<float>(settings.samples);
-			Utils::rgbToSrgb(color);
-			*ptr++ = static_cast<byte>(255.99f * color.r);
-			*ptr++ = static_cast<byte>(255.99f * color.g);
-			*ptr++ = static_cast<byte>(255.99f * color.b);
-
-			statistics.totalRenderedPixels++;
-		}
-	}*/
-
-	stbi_write_bmp(settings.outputFileName.c_str(), settings.width, settings.height, 3, image);
-	delete[] image;
 }
 
-Vec3 PathTracer::computeColor(Ray &ray, uint32 depth) {
+Vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &statistics) {
 
 	HitRecord hitRecord;
 	statistics.maxDepthReached = Utils::max(statistics.maxDepthReached, depth);
@@ -158,7 +113,7 @@ Vec3 PathTracer::computeColor(Ray &ray, uint32 depth) {
 		if (depth < settings.maxRayDepth) {
 			if (hitRecord.material->scatter(ray, hitRecord, attenuation, scattered)) {
 				statistics.scatteredRays++;
-				return attenuation * computeColor(scattered, depth + 1);
+				return attenuation * computeColor(scattered, depth + 1, statistics);
 			}
 			else {
 				return Vec3(0.0f);
@@ -183,7 +138,9 @@ void PathTracer::printPreRender() const {
 }
 
 void PathTracer::printPostRender() const {
-	std::cout << "--------------------------------------------" << std::endl;
-	std::cout << statistics << std::endl;
-	std::cout << "--------------------------------------------" << std::endl;
+	for (uint32 i = 0; i < settings.threads; ++i) {
+		std::cout << "----------------- Thread " << i << " -----------------" << std::endl;
+		std::cout << threadStatistics[i] << std::endl;
+		std::cout << "--------------------------------------------" << std::endl;
+	}
 }

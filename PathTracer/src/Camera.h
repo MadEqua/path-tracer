@@ -6,7 +6,7 @@
 class Camera
 {
 public:
-	Camera(const Vec3 &position, const Vec3 &lookAt, const Vec3 vUp, 
+	Camera(const Vec3 &position, const Vec3 &lookAt, const Vec3 vUp,
 		float vFov, float aspectRatio,
 		float aperture, float focusDistance);
 	~Camera();

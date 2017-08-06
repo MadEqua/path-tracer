@@ -6,6 +6,7 @@
 
 struct RenderStatistics {
 	uint32 totalRenderedPixels;
+	uint32 totalRenderedTiles;
 	uint32 primaryRays; //This should be width * height * samples
 	uint32 scatteredRays;
 	uint32 maxDepthReached; //The maximum depth reached by any ray
@@ -23,6 +24,7 @@ struct RenderStatistics {
 
 inline std::ostream& operator<<(std::ostream &os, const RenderStatistics &stats) {
 	os << "Total rendered pixels: " << stats.totalRenderedPixels << std::endl <<
+		"Total rendered tiles: " << stats.totalRenderedTiles << std::endl <<
 		"Primary rays: " << stats.primaryRays << std::endl <<
 		"Scattered rays: " << stats.scatteredRays << std::endl <<
 		"Max depth reached by any ray: " << stats.maxDepthReached << std::endl <<

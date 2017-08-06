@@ -59,11 +59,12 @@ void initScene(Scene &scene) {
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 198;
-	settings.height = 108;
-	settings.samples = 10;
+	settings.width = 1920;
+	settings.height = 1080;
+	settings.samples = 200;
 	settings.maxRayDepth = 50;
-	settings.tileSize = 16;
+	settings.tileSize = 32;
+	settings.threads = 2;
 	settings.outputFileName = "tt.bmp";
 	
 	Scene scene;
