@@ -13,6 +13,7 @@ struct RenderSettings {
 	uint32 width, height;
 	uint32 samples;
 	uint32 maxRayDepth;
+	uint32 tileSize;
 	std::string outputFileName;
 };
 
@@ -38,6 +39,7 @@ inline std::ostream& operator<<(std::ostream &os, const RenderSettings &settings
 	os << "File output: " << settings.outputFileName << std::endl <<
 		"Dimensions: " << settings.width << "x" << settings.height << std::endl <<
 		"Samples: " << settings.samples << std::endl <<
-		"Max ray depth: " << settings.maxRayDepth;
+		"Max ray depth: " << settings.maxRayDepth << std::endl <<
+		"Tile size: " << settings.tileSize;
 	return os;
 }
