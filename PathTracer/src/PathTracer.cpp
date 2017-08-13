@@ -44,6 +44,7 @@ void PathTracer::renderScene() {
 	}
 
 	stbi_write_bmp(settings.outputFileName.c_str(), settings.width, settings.height, 3, imageBuffer);
+	//stbi_write_jpg((settings.outputFileName + ".jpg").c_str(), settings.width, settings.height, 3, imageBuffer, 100);
 }
 
 void PathTracer::renderTile(int threadId) {
@@ -85,13 +86,13 @@ void PathTracer::renderTile(int threadId) {
 				}
 
 				color /= static_cast<float>(settings.samples);
-				Utils::rgbToSrgb(color);
+				Vec3 srgb = Utils::rgbToSrgb(color);
 
 				uint32 invertedY = settings.height - 1 - y;
 				byte *ptr = imageBuffer + ((settings.width * invertedY) + x) * 3;
-				*ptr++ = static_cast<byte>(255.999f * color.r);
-				*ptr++ = static_cast<byte>(255.999f * color.g);
-				*ptr = static_cast<byte>(255.999f * color.b);
+				*ptr++ = static_cast<byte>(255.999f * srgb.r);
+				*ptr++ = static_cast<byte>(255.999f * srgb.g);
+				*ptr = static_cast<byte>(255.999f * srgb.b);
 
 				statistics.totalRenderedPixels++;
 			}

@@ -21,17 +21,33 @@ bool Utils::refract(const Vec3 &in, const Vec3 &normal, float niOverNt, Vec3 &re
 	return false;
 }
 
-void Utils::rgbToSrgb(Vec3 &rgb) {
+Vec3 Utils::rgbToSrgb(Vec3 &rgb) {
+	Vec3 srgb;
 	for (int i = 0; i < 3; ++i) {
 		float c = rgb.values[i];
 		if (c <= 0.0031308f) {
-			rgb.values[i] = 12.92f * c;
+			srgb.values[i] = 12.92f * c;
 		}
 		else {
-			// Inverse gamma 2.4
-			rgb.values[i] = 1.055f * pow(c, 0.4166667f) - 0.055f;
+			// 0.4166667 = inverse gamma 2.4
+			srgb.values[i] = 1.055f * pow(c, 0.4166667f) - 0.055f;
 		}
 	}
+	return srgb;
+}
+
+Vec3 Utils::srgbToRgb(Vec3 &srgb) {
+	Vec3 rgb;
+	for (int i = 0; i < 3; ++i) {
+		float c = srgb.values[i];
+		if (c <= 0.04045f) {
+			rgb.values[i] = c / 12.92f;
+		}
+		else {
+			rgb.values[i] = pow(((c + 0.055f) / 1.055f), 2.4f);
+		}
+	}
+	return rgb;
 }
 
 Vec3 Utils::randomInUnitSphere() {

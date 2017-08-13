@@ -7,7 +7,7 @@
 class FileTexture : public Texture
 {
 public:
-	FileTexture(const std::string &path);
+	FileTexture(const std::string &path, bool sRGB = true);
 	virtual ~FileTexture();
 	virtual Vec3 value(float u, float v, float scaleU, float scaleV) const override;
 
@@ -15,5 +15,6 @@ private:
 	byte *data;
 	int width, height;
 	int numberOfComponents; //ex: RGB = 3
+	bool sRGB;
 };
 

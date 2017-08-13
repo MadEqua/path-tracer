@@ -4,8 +4,10 @@
 #include "HitRecord.h"
 #include "Ray.h"
 #include "Utils.h"
+#include "Texture.h"
 
-Metal::Metal(const Vec3 &albedo, float fuzziness) : albedo(albedo) {
+Metal::Metal(const Texture *albedo, float fuzziness, float textureScaleU, float textureScaleV) : 
+	Material(albedo, textureScaleU, textureScaleV) {
 	if (fuzziness < 1.0f)
 		this->fuzziness = fuzziness;
 	else 
@@ -18,8 +20,12 @@ bool Metal::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation
 	inDirCopy.normalize();
 
 	scattered.set(hitRecord.point, Utils::reflect(inDirCopy, hitRecord.normal) + fuzziness * Utils::randomInUnitSphere());
-	attenuation = albedo;
-
+	if (scattered.direction.dot(hitRecord.normal) > 0.0f) {
+		attenuation = albedo->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV);
+		return true;
+	}
 	//Absorb possible reflections to the "inside" (possible due to the fuzziness random operation)
-	return scattered.direction.dot(hitRecord.normal) > 0.0f; 
+	else {
+		return false;
+	}
 }

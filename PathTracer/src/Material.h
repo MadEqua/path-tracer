@@ -8,12 +8,12 @@ class Texture;
 class Material
 {
 public:
-	Material() : texture(nullptr) {}
-	Material(const Texture *texture, float textureScaleU, float textureScaleV) : texture(texture), textureScaleU(textureScaleU), textureScaleV(textureScaleV) {}
+	Material() : albedo(nullptr) {}
+	Material(const Texture *albedo, float textureScaleU, float textureScaleV) : albedo(albedo), textureScaleU(textureScaleU), textureScaleV(textureScaleV) {}
 	virtual ~Material() = default;
 	virtual bool scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const = 0;
 
 protected:
-	const Texture *texture;
+	const Texture *albedo;
 	float textureScaleU, textureScaleV;
 };

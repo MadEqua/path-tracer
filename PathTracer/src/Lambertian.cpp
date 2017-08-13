@@ -14,6 +14,6 @@ bool Lambertian::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenu
 	//TODO: scatter with prob p and attenuation = albedo/p ??
 	Vec3 targetPoint = hitRecord.point + hitRecord.normal + Utils::randomInUnitSphere();
 	scattered.set(hitRecord.point, targetPoint - hitRecord.point);
-	attenuation = texture->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV);
+	attenuation = albedo->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV);
 	return true;
 }

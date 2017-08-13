@@ -16,7 +16,9 @@ namespace Utils
 {
 	Vec3 reflect(const Vec3 &in, const Vec3 &normal);
 	bool refract(const Vec3 &in, const Vec3 &normal, float niOverNt, Vec3 &refracted);
-	void rgbToSrgb(Vec3 &rgb);
+	Vec3 rgbToSrgb(Vec3 &rgb);
+	Vec3 srgbToRgb(Vec3 &srgb);
+
 	Vec3 randomInUnitSphere();
 	Vec3 randomInUnitDisk();
 	float shlick(float cosine, float refractionIdx);

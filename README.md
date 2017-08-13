@@ -9,6 +9,7 @@ Extensible and modular Path-Tracer in C++.
 - Bounding volume hierarchy (AABB) for optimized scene traversal.
 - Randomized super-sampling antialiasing.
 - Multi-threaded rendering.
+- sRGB/Gamma correct rendering.
 - Detailed render statistics feedback.
 
 # License

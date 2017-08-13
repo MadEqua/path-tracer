@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-FileTexture::FileTexture(const std::string &path) {
+FileTexture::FileTexture(const std::string &path, bool sRGB) : sRGB(sRGB) {
 	data = stbi_load(path.c_str(), &width, &height, &numberOfComponents, 0);
 	if (!data) {
 		std::cout << "Error loading image " + path << ". Reason: " << stbi_failure_reason() << std::endl;
@@ -25,7 +25,10 @@ Vec3 FileTexture::value(float u, float v, float scaleU, float scaleV) const {
 
 	uint32 invertedY = height - 1 - t;
 	byte *texel = data + ((invertedY * width) + s) * numberOfComponents;
-	return Vec3(static_cast<float>(*texel) / 255.999f,
+
+	Vec3 color(static_cast<float>(*texel) / 255.999f,
 		static_cast<float>(*(texel + 1)) / 255.999f,
 		static_cast<float>(*(texel + 2)) / 255.999f);
+
+	return sRGB ? Utils::srgbToRgb(color) : color;
 }

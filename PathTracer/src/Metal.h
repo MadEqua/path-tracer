@@ -8,11 +8,10 @@ class Ray;
 class Metal : public Material
 {
 public:
-	Metal(const Vec3 &albedo, float fuzziness);
+	Metal(const Texture *albedo, float fuzziness, float textureScaleU = 1.0f, float textureScaleV = 1.0f);
 	virtual bool scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const override;
 
 private:
-	Vec3 albedo;
 	float fuzziness;
 };
 
