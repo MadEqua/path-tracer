@@ -10,12 +10,19 @@
 #include "PathTracer.h"
 #include "ConstantTexture.h"
 #include "CheckerTexture.h"
+#include "FileTexture.h"
 
 void initScene(Scene &scene) {
 	
-	Texture *tex = new CheckerTexture(Vec3(0.2f, 0.3f, 0.1f), Vec3(0.9f, 0.9f, 0.9f));
-	Material *lam = new Lambertian(tex, 4.0f);
-	scene.addTexture(tex);
+	Texture *checkerTex = new CheckerTexture(Vec3(0.2f, 0.3f, 0.1f), Vec3(0.9f, 0.9f, 0.9f));
+	Texture *testTex = new FileTexture("test3.jpg");
+	Texture *constTex = new ConstantTexture(Vec3(0.4f, 0.2f, 0.1f));
+
+	scene.addTexture(checkerTex);
+	scene.addTexture(testTex);
+	scene.addTexture(constTex);
+	
+	Material *lam = new Lambertian(checkerTex, 4.0f);
 	scene.addMaterial(lam);
 	scene.addObject(new Sphere(Vec3(0, -1000, 0), 1000.0f, lam));
 	
@@ -26,14 +33,22 @@ void initScene(Scene &scene) {
 			if ((center - Vec3(4, 0.2f, 0)).length() > 0.9f) {
 				Material *material;
 				
-				if (chooseMaterial < 0.8f) {
-					/*Texture *tex = new ConstantTexture(Vec3(Utils::random0To1()*Utils::random0To1(),
-						Utils::random0To1()*Utils::random0To1(),
-						Utils::random0To1()*Utils::random0To1()));
-					scene.addTexture(tex);*/
-					material = new Lambertian(tex, Utils::random0To1() + 2.0f, Utils::random0To1() + 2.0f);
+				if (chooseMaterial < 0.8f) { //Lambertian
+
+					float chooseTex = Utils::random0To1();
+					Texture *tex;
+					if (chooseTex < 0.25f) {
+						tex = testTex;
+					}
+					else {
+						tex = new ConstantTexture(Vec3(Utils::random0To1()*Utils::random0To1(),
+							Utils::random0To1()*Utils::random0To1(),
+							Utils::random0To1()*Utils::random0To1()));
+						scene.addTexture(tex);
+					}
+					material = new Lambertian(tex);
 				}
-				else if (chooseMaterial < 0.95f) {
+				else if (chooseMaterial < 0.95f) { //Metal
 					material = new Metal(Vec3(0.5f * (1.0f + Utils::random0To1()),
 						0.5f * (1.0f + Utils::random0To1()),
 						0.5f * (1.0f + Utils::random0To1())),
@@ -49,11 +64,8 @@ void initScene(Scene &scene) {
 		}
 	}
 
-	tex = new ConstantTexture(Vec3(0.4f, 0.2f, 0.1f));
-	scene.addTexture(tex);
-
 	Material *di = new Dielectric(1.5f);
-	Material *l = new Lambertian(tex);
+	Material *l = new Lambertian(constTex);
 	Material *m = new Metal(Vec3(0.7f, 0.6f, 0.5f), 0.0f);
 
 	scene.addMaterial(di);
@@ -67,12 +79,17 @@ void initScene(Scene &scene) {
 
 void initScene2(Scene &scene) {
 
-	Texture *tex = new CheckerTexture(Vec3(0.2f, 0.3f, 0.1f), Vec3(0.9f, 0.9f, 0.9f));
-	Material *lam = new Lambertian(tex, 2.0f, 1.0f);
+	Texture *checker = new CheckerTexture(Vec3(0.2f, 0.3f, 0.1f), Vec3(0.9f, 0.9f, 0.9f));
+	Material *lamChecker = new Lambertian(checker, 4.0f, 1.0f);
+	scene.addTexture(checker);
+	scene.addMaterial(lamChecker);
+
+	Texture *tex = new FileTexture("test3.jpg");
+	Material *lam = new Lambertian(tex, 1.0f, 1.0f);
 	scene.addTexture(tex);
 	scene.addMaterial(lam);
 
-	scene.addObject(new Sphere(Vec3(0, -1000, 0), 1000.0f, lam));
+	scene.addObject(new Sphere(Vec3(0, -1000, 0), 1000.0f, lamChecker));
 	scene.addObject(new Sphere(Vec3(0, 1, 0), 1.0f, lam));
 	scene.addObject(new Sphere(Vec3(0, 1, 2), 1.0f, lam));
 	scene.addObject(new Sphere(Vec3(2, 1, 0), 1.0f, lam));
@@ -81,20 +98,22 @@ void initScene2(Scene &scene) {
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 600;
-	settings.height = 400;
-	settings.samples = 20;
+	settings.width = 1920;
+	settings.height = 1080;
+	settings.samples = 150;
 	settings.maxRayDepth = 50;
 	settings.tileSize = 32;
-	settings.threads = 4;
-	settings.outputFileName = "output18.bmp";
+	settings.threads = 3;
+	settings.outputFileName = "output20.bmp";
 	
 	Scene scene;
 	initScene(scene);
 
 	Vec3 lookfrom(13, 2, 3);
 
-	//Vec3 lookfrom(6, 2, 9);
+	//float theta = PI / 4.0f;
+	//float R = 9.0f;
+	//Vec3 lookfrom(R * cos(theta), 8.0f, R * sin(theta));
 	//Vec3 lookfrom(0, 20, 0);
 	//Vec3 lookfrom(20, 0.5f, 0);
 	//Vec3 lookfrom(0, 0.5f, 20);

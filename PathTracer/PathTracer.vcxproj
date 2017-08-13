@@ -119,6 +119,7 @@
     <ClCompile Include="src\CheckerTexture.cpp" />
     <ClCompile Include="src\ConstantTexture.cpp" />
     <ClCompile Include="src\Dielectric.cpp" />
+    <ClCompile Include="src\FileTexture.cpp" />
     <ClCompile Include="src\Lambertian.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Metal.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="src\CheckerTexture.h" />
     <ClInclude Include="src\ConstantTexture.h" />
     <ClInclude Include="src\Dielectric.h" />
+    <ClInclude Include="src\FileTexture.h" />
     <ClInclude Include="src\Hitable.h" />
     <ClInclude Include="src\HitRecord.h" />
     <ClInclude Include="src\Lambertian.h" />
@@ -148,6 +150,7 @@
     <ClInclude Include="src\RenderStatistics.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Sphere.h" />
+    <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\stb_image_write.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Timer.h" />

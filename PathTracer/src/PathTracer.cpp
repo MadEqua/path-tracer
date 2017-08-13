@@ -89,9 +89,9 @@ void PathTracer::renderTile(int threadId) {
 
 				uint32 invertedY = settings.height - 1 - y;
 				byte *ptr = imageBuffer + ((settings.width * invertedY) + x) * 3;
-				*ptr++ = static_cast<byte>(255.99f * color.r);
-				*ptr++ = static_cast<byte>(255.99f * color.g);
-				*ptr = static_cast<byte>(255.99f * color.b);
+				*ptr++ = static_cast<byte>(255.999f * color.r);
+				*ptr++ = static_cast<byte>(255.999f * color.g);
+				*ptr = static_cast<byte>(255.999f * color.b);
 
 				statistics.totalRenderedPixels++;
 			}
