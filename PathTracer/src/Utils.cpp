@@ -1,5 +1,4 @@
 #include "Utils.h"
-#include <cmath>
 
 std::default_random_engine rng;
 std::uniform_real_distribution<float> dist0to1(0.0f, 1.0f);

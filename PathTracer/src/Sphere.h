@@ -14,5 +14,8 @@ public:
 
 	virtual bool hit(const Ray& ray, float tMin, float tMax, HitRecord &hitRecord, RenderStatistics &statistics) const override;
 	virtual bool boundingBox(float t0, float t1, AABB &aabb) const override;
+
+private:
+	void computeHitRecord(const Ray &ray, float t, HitRecord &hitRecord) const;
 };
 

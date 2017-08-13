@@ -116,6 +116,7 @@ Vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &statisti
 				return attenuation * computeColor(scattered, depth + 1, statistics);
 			}
 			else {
+				statistics.absorbedRays++;
 				return Vec3(0.0f);
 			}
 		}

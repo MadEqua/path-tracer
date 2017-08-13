@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Material.h"
+#include "Texture.h"
 #include "Camera.h"
 #include "BvhNode.h"
 
@@ -15,6 +16,9 @@ Scene::~Scene() {
 
 	for (const Material *mat : materials)
 		delete mat;
+
+	for (const Texture *tex : textures)
+		delete tex;
 
 	delete camera;
 }

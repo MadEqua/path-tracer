@@ -8,10 +8,14 @@
 #include "Dielectric.h"
 #include "Utils.h"
 #include "PathTracer.h"
+#include "ConstantTexture.h"
+#include "CheckerTexture.h"
 
 void initScene(Scene &scene) {
 	
-	Material *lam = new Lambertian(Vec3(0.5f));
+	Texture *tex = new CheckerTexture(Vec3(0.2f, 0.3f, 0.1f), Vec3(0.9f, 0.9f, 0.9f));
+	Material *lam = new Lambertian(tex, 4.0f);
+	scene.addTexture(tex);
 	scene.addMaterial(lam);
 	scene.addObject(new Sphere(Vec3(0, -1000, 0), 1000.0f, lam));
 	
@@ -23,9 +27,11 @@ void initScene(Scene &scene) {
 				Material *material;
 				
 				if (chooseMaterial < 0.8f) {
-					material = new Lambertian(Vec3(Utils::random0To1()*Utils::random0To1(),
+					/*Texture *tex = new ConstantTexture(Vec3(Utils::random0To1()*Utils::random0To1(),
 						Utils::random0To1()*Utils::random0To1(),
 						Utils::random0To1()*Utils::random0To1()));
+					scene.addTexture(tex);*/
+					material = new Lambertian(tex, Utils::random0To1() + 2.0f, Utils::random0To1() + 2.0f);
 				}
 				else if (chooseMaterial < 0.95f) {
 					material = new Metal(Vec3(0.5f * (1.0f + Utils::random0To1()),
@@ -43,8 +49,11 @@ void initScene(Scene &scene) {
 		}
 	}
 
+	tex = new ConstantTexture(Vec3(0.4f, 0.2f, 0.1f));
+	scene.addTexture(tex);
+
 	Material *di = new Dielectric(1.5f);
-	Material *l = new Lambertian(Vec3(0.4f, 0.2f, 0.1f));
+	Material *l = new Lambertian(tex);
 	Material *m = new Metal(Vec3(0.7f, 0.6f, 0.5f), 0.0f);
 
 	scene.addMaterial(di);
@@ -56,23 +65,45 @@ void initScene(Scene &scene) {
 	scene.addObject(new Sphere(Vec3(4, 1, 0), 1.0f, m));
 }
 
+void initScene2(Scene &scene) {
+
+	Texture *tex = new CheckerTexture(Vec3(0.2f, 0.3f, 0.1f), Vec3(0.9f, 0.9f, 0.9f));
+	Material *lam = new Lambertian(tex, 2.0f, 1.0f);
+	scene.addTexture(tex);
+	scene.addMaterial(lam);
+
+	scene.addObject(new Sphere(Vec3(0, -1000, 0), 1000.0f, lam));
+	scene.addObject(new Sphere(Vec3(0, 1, 0), 1.0f, lam));
+	scene.addObject(new Sphere(Vec3(0, 1, 2), 1.0f, lam));
+	scene.addObject(new Sphere(Vec3(2, 1, 0), 1.0f, lam));
+}
+
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 1920;
-	settings.height = 1080;
-	settings.samples = 200;
+	settings.width = 600;
+	settings.height = 400;
+	settings.samples = 20;
 	settings.maxRayDepth = 50;
 	settings.tileSize = 32;
-	settings.threads = 2;
-	settings.outputFileName = "tt.bmp";
+	settings.threads = 4;
+	settings.outputFileName = "output18.bmp";
 	
 	Scene scene;
 	initScene(scene);
 
 	Vec3 lookfrom(13, 2, 3);
+
+	//Vec3 lookfrom(6, 2, 9);
+	//Vec3 lookfrom(0, 20, 0);
+	//Vec3 lookfrom(20, 0.5f, 0);
+	//Vec3 lookfrom(0, 0.5f, 20);
+
+	Vec3 upVector(0, 1, 0);
+	//Vec3 upVector(0, 0, -1);
+
 	Vec3 lookat(0, 0, 0);
-	Camera *camera = new Camera(lookfrom, lookat, Vec3(0, 1, 0),
+	Camera *camera = new Camera(lookfrom, lookat, upVector,
 		20.0f, (float)settings.width / (float)settings.height,
 		0.05f, (lookfrom - lookat).length());
 	scene.setCamera(camera);

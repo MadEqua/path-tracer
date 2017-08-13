@@ -7,6 +7,7 @@ class Ray;
 class Object;
 class Camera;
 class Material;
+class Texture;
 struct HitRecord;
 class BvhNode;
 struct RenderStatistics;
@@ -19,6 +20,7 @@ public:
 
 	inline void addObject(const Object *object) { objects.push_back(object); }
 	inline void addMaterial(const Material *material) { materials.push_back(material); }
+	inline void addTexture(const Texture *texture) { textures.push_back(texture); }
 	inline void setCamera(const Camera *camera) { this->camera = camera; }
 	inline const Camera* getCamera() const { return camera; }
 
@@ -32,6 +34,7 @@ public:
 private:
 	std::vector<const Object*> objects;
 	std::vector<const Material*> materials;
+	std::vector<const Texture*> textures;
 	const Camera *camera;
 
 	BvhNode *rootBvhNode;

@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Vec3.h"
 #include <random>
+#include <cmath>
+
+#include "Vec3.h"
 
 extern std::default_random_engine rng; //TODO seed?
 extern std::uniform_real_distribution<float> dist0to1;
@@ -25,4 +27,6 @@ namespace Utils
 
 	template<class T> inline T min(T a, T b) { return a < b ? a : b; }
 	template<class T> inline T max(T a, T b) { return a > b ? a : b; }
+
+	inline float decimalPart(float v) { return v - floor(v); }
 };

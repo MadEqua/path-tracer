@@ -9,6 +9,7 @@ struct RenderStatistics {
 	uint32 totalRenderedTiles;
 	uint32 primaryRays; //This should be width * height * samples
 	uint32 scatteredRays;
+	uint32 absorbedRays;
 	uint32 maxDepthReached; //The maximum depth reached by any ray
 	uint32 raysReachedMaxDepth; //The count of rays that reached the max depth from RenderSettings
 	uint32 bvhIntersectionsComputed;
@@ -27,6 +28,7 @@ inline std::ostream& operator<<(std::ostream &os, const RenderStatistics &stats)
 		"Total rendered tiles: " << stats.totalRenderedTiles << std::endl <<
 		"Primary rays: " << stats.primaryRays << std::endl <<
 		"Scattered rays: " << stats.scatteredRays << std::endl <<
+		"Absorbed rays: " << stats.absorbedRays << std::endl <<
 		"Max depth reached by any ray: " << stats.maxDepthReached << std::endl <<
 		"Rays that reached the settings max depth: " << stats.raysReachedMaxDepth << std::endl <<
 		"BVH intersections computed: " << stats.bvhIntersectionsComputed <<  " (" << stats.bvhIntersectionsFailed << " failed)" << std::endl <<

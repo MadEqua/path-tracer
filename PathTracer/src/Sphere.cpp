@@ -1,9 +1,12 @@
 #include "Sphere.h"
 
+#include <cmath>
+
 #include "HitRecord.h"
 #include "Ray.h"
 #include "AABB.h"
 #include "RenderStatistics.h"
+#include "Utils.h"
 
 
 Sphere::Sphere(const Vec3 &center, float radius, Material *material) :
@@ -24,19 +27,13 @@ bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, R
 	if (discriminant > 0.0f) {
 		t = (-b - sqrt(discriminant)) / a;
 		if (t > tMin && t < tMax) {
-			hitRecord.t = t;
-			hitRecord.point = ray.pointAtParameter(t);
-			hitRecord.normal = (hitRecord.point - center) / radius;
-			hitRecord.material = material;
+			computeHitRecord(ray, t, hitRecord);
 			return true;
 		}
 		else {
 			t = (-b + sqrt(discriminant)) / a;
 			if (t > tMin && t < tMax) {
-				hitRecord.t = t;
-				hitRecord.point = ray.pointAtParameter(t);
-				hitRecord.normal = (hitRecord.point - center) / radius;
-				hitRecord.material = material;
+				computeHitRecord(ray, t, hitRecord);
 				return true;
 			}
 		}
@@ -49,4 +46,17 @@ bool Sphere::boundingBox(float t0, float t1, AABB &aabb) const {
 	Vec3 radiusVec(radius);
 	aabb.set(center - radiusVec, center + radiusVec);
 	return true;
+}
+
+void Sphere::computeHitRecord(const Ray &ray, float t, HitRecord &hitRecord) const {
+	hitRecord.t = t;
+	hitRecord.point = ray.pointAtParameter(t);
+	hitRecord.normal = (hitRecord.point - center) / radius;
+	hitRecord.material = material;
+
+	Vec3 localCoord = hitRecord.point - center;
+	float theta = asin(localCoord.y / radius); //[-pi/2,pi/2]
+	float phi = atan2(localCoord.z, localCoord.x); //[-pi,+pi]
+	hitRecord.u = 1.0f - ((phi + PI) / (2.0f * PI));
+	hitRecord.v = (theta + PI / 2.0f) / PI;
 }
