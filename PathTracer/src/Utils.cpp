@@ -71,3 +71,9 @@ float Utils::shlick(float cosine, float refractionIdx) {
 	r0 = r0 * r0;
 	return r0 + (1.0f - r0) * pow((1.0f - cosine), 5.0f);
 }
+
+Vec3 Utils::unpackNormalFromRgb(const Vec3 &rgb) {
+	Vec3 result = (rgb * 2.0f) - Vec3(1.0f);
+	result.normalize();
+	return result;
+}

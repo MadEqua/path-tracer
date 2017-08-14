@@ -49,14 +49,31 @@ bool Sphere::boundingBox(float t0, float t1, AABB &aabb) const {
 }
 
 void Sphere::computeHitRecord(const Ray &ray, float t, HitRecord &hitRecord) const {
+	
 	hitRecord.t = t;
 	hitRecord.point = ray.pointAtParameter(t);
-	hitRecord.normal = (hitRecord.point - center) / radius;
-	hitRecord.material = material;
-
+	
 	Vec3 localCoord = hitRecord.point - center;
 	float theta = asin(localCoord.y / radius); //[-pi/2,pi/2]
 	float phi = atan2(localCoord.z, localCoord.x); //[-pi,+pi]
+
+	//TODO find a better method to compute tangents
+	float deltaPhi = phi + FLOAT_BIAS;
+	Vec3 deltaPoint(radius * cos(theta) * cos(deltaPhi),
+		radius * sin(theta),
+		radius * cos(theta) * sin(deltaPhi));
+
+	//Assume local space to be aligned with world space
+	//So this is also the tangent in world space
+	hitRecord.tangent = deltaPoint - localCoord;
+	hitRecord.tangent.normalize();
+
+	hitRecord.normal = localCoord / radius;
+	hitRecord.bitangent = hitRecord.tangent.cross(hitRecord.normal);
+	hitRecord.bitangent.normalize();
+
+	hitRecord.material = material;
+
 	hitRecord.u = 1.0f - ((phi + PI) / (2.0f * PI));
 	hitRecord.v = (theta + PI / 2.0f) / PI;
 }

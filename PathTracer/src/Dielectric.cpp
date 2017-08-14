@@ -4,30 +4,45 @@
 #include "HitRecord.h"
 #include "Vec3.h"
 #include "Ray.h"
+#include "Texture.h"
 
 Dielectric::Dielectric(float refractionIndex) : refractionIndex(refractionIndex) {
 }
 
+Dielectric::Dielectric(const Texture *albedo, float refractionIndex, float textureScaleU, float textureScaleV) :
+	Material(albedo, textureScaleU, textureScaleV), refractionIndex(refractionIndex) {
+}
+
+Dielectric::Dielectric(const Texture *albedo, const Texture *normalMap, float refractionIndex, float textureScaleU, float textureScaleV) :
+	Material(albedo, normalMap, textureScaleU, textureScaleV), refractionIndex(refractionIndex) {
+}
+
 bool Dielectric::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const {
+	
+	Vec3 normal = getNormal(hitRecord);
+	
 	Vec3 outwardNormal;
-	Vec3 reflected = Utils::reflect(in.direction, hitRecord.normal);
 	float niOverNt;
-	attenuation.set(1.0f);
-	Vec3 refracted;
 	float cosine;
 
-	if (in.direction.dot(hitRecord.normal) > 0.0f) { //outside
-		outwardNormal = -hitRecord.normal;
+	Vec3 inDirection = in.direction;
+	inDirection.normalize();
+
+	if (inDirection.dot(normal) > 0.0f) { //outside
+		outwardNormal = -normal;
 		niOverNt = refractionIndex;
-		cosine = refractionIndex * in.direction.dot(hitRecord.normal) / in.direction.length();
+		cosine = refractionIndex * inDirection.dot(normal);
 	}
 	else { //inside
-		outwardNormal = hitRecord.normal;
+		outwardNormal = normal;
 		niOverNt = 1.0f / refractionIndex;
-		cosine = -in.direction.dot(hitRecord.normal) / in.direction.length();
+		cosine = -inDirection.dot(normal);
 	}
 
-	if (Utils::refract(in.direction, outwardNormal, niOverNt, refracted)) {
+	Vec3 reflected = Utils::reflect(inDirection, normal);
+	Vec3 refracted;
+
+	if (Utils::refract(inDirection, outwardNormal, niOverNt, refracted)) {
 		float reflectProb = Utils::shlick(cosine, refractionIndex);
 
 		if (Utils::random0To1() < reflectProb) {
@@ -40,6 +55,13 @@ bool Dielectric::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenu
 	}
 	else {
 		scattered.set(hitRecord.point, reflected);
+	}
+
+	if (albedo != nullptr) {
+		attenuation = albedo->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV);
+	}
+	else {
+		attenuation.set(1.0f);
 	}
 
 	return true;

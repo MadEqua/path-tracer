@@ -31,4 +31,6 @@ namespace Utils
 	template<class T> inline T max(T a, T b) { return a > b ? a : b; }
 
 	inline float decimalPart(float v) { return v - floor(v); }
+
+	Vec3 unpackNormalFromRgb(const Vec3 &rgb);
 };

@@ -7,24 +7,31 @@
 #include "Texture.h"
 
 Metal::Metal(const Texture *albedo, float fuzziness, float textureScaleU, float textureScaleV) : 
-	Material(albedo, textureScaleU, textureScaleV) {
+	Metal(albedo, nullptr, fuzziness, textureScaleU, textureScaleV) {
+}
+
+Metal::Metal(const Texture *albedo, const Texture *normalMap, float fuzziness, float textureScaleU, float textureScaleV) :
+	Material(albedo, normalMap, textureScaleU, textureScaleV) {
 	if (fuzziness < 1.0f)
 		this->fuzziness = fuzziness;
-	else 
+	else
 		this->fuzziness = 1.0f;
 }
 
 bool Metal::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const {
 	
-	Vec3 inDirCopy = in.direction;
-	inDirCopy.normalize();
+	Vec3 normal = getNormal(hitRecord);
+	
+	Vec3 inDirection = in.direction;
+	inDirection.normalize();
 
-	scattered.set(hitRecord.point, Utils::reflect(inDirCopy, hitRecord.normal) + fuzziness * Utils::randomInUnitSphere());
-	if (scattered.direction.dot(hitRecord.normal) > 0.0f) {
+	scattered.set(hitRecord.point, Utils::reflect(inDirection, normal) + fuzziness * Utils::randomInUnitSphere());
+	scattered.direction.normalize();
+	if (scattered.direction.dot(normal) > 0.0f) {
 		attenuation = albedo->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV);
 		return true;
 	}
-	//Absorb possible reflections to the "inside" (possible due to the fuzziness random operation)
+	//Absorb possible reflections to the "inside" (possible due to the fuzziness random operation and the normal map)
 	else {
 		return false;
 	}

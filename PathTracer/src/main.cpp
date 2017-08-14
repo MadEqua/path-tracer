@@ -84,53 +84,70 @@ void initScene(Scene &scene) {
 
 void initScene2(Scene &scene) {
 
-	Texture *checker = new CheckerTexture(Vec3(0.2f, 0.3f, 0.1f), Vec3(0.8f));
-	Material *metalChecker = new Metal(checker, 0.15f, 8.0f, 1.0f);
-	scene.addTexture(checker);
+	Texture *constTex = new ConstantTexture(Vec3(0.8f, 0.8f, 0.95f));
+	Texture *wallTex = new FileTexture("../resources/165.jpg");
+	Texture *checkerTex = new CheckerTexture(Vec3(0.2f, 0.3f, 0.1f), Vec3(0.8f));
+	Texture *normalMap = new FileTexture("../resources/165_norm.jpg", false);
+	Texture *normalMap2 = new FileTexture("../resources/normal.jpg", false);
+	Texture *normalMap3 = new FileTexture("../resources/normal3.jpg", false);
+	
+	scene.addTexture(constTex);
+	scene.addTexture(wallTex);
+	scene.addTexture(checkerTex);
+	scene.addTexture(normalMap);
+	scene.addTexture(normalMap2);
+	scene.addTexture(normalMap3);
+
+	Material *metalChecker = new Metal(checkerTex, normalMap2, 0.0f, 40.0f, 1200.0f);
 	scene.addMaterial(metalChecker);
 
-	Texture *tex = new FileTexture("../resources/test3.jpg");
-	Material *lam = new Lambertian(tex, 1.0f, 1.0f);
-	
-	scene.addTexture(tex);
+	Material *lam = new Lambertian(wallTex, normalMap, 2, 2);
 	scene.addMaterial(lam);
 
+	Material *di = new Dielectric(constTex, normalMap3, 1.1f, 2, 2);
+	scene.addMaterial(di);
+
+	Material *metal2 = new Metal(constTex, normalMap3, 0.f, 2, 2);
+	scene.addMaterial(metal2);
+
 	scene.addObject(new Sphere(Vec3(0, -1000, 0), 1000.0f, metalChecker));
-	scene.addObject(new Sphere(Vec3(0, 1, 0), 1.0f, lam));
-	scene.addObject(new Sphere(Vec3(0, 1, 2.2f), 1.0f, lam));
-	scene.addObject(new Sphere(Vec3(2.2f, 1, 0), 1.0f, lam));
+	scene.addObject(new Sphere(Vec3(5.0f, 0.95f, 5.0f), 1.0f, di));
+	scene.addObject(new Sphere(Vec3(4.0f, 0.45f, 6.2f), 0.5f, lam));
+	scene.addObject(new Sphere(Vec3(6.2f, 0.45f, 4.0f), 0.5f, metal2));
 }
 
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 1920;
-	settings.height = 1080;
-	settings.samples = 200;
+	settings.width = 400;
+	settings.height = 300;
+	settings.samples = 50;
 	settings.maxRayDepth = 50;
 	settings.tileSize = 32;
 	settings.threads = 4;
-	settings.outputFileName = "output22.bmp";
+	settings.outputFileName = "output26.bmp";
 	
 	Scene scene;
 	initScene2(scene);
 
 	//Vec3 lookfrom(13, 2, 3);
 
-	float theta = PI / 4.0f;
-	float R = 9.0f;
-	Vec3 lookfrom(R * cos(theta), 8.0f, R * sin(theta));
+	const float theta = PI / 4.0f;
+	const float R = 15.0f;
+	Vec3 lookfrom(R * cos(theta), 3.0f, R * sin(theta));
 	//Vec3 lookfrom(0, 20, 0);
 	//Vec3 lookfrom(20, 0.5f, 0);
-	//Vec3 lookfrom(0, 0.5f, 20);
+	//Vec3 lookfrom(7, 0.5f, 0);
 
 	Vec3 upVector(0, 1, 0);
 	//Vec3 upVector(0, 0, -1);
 
-	Vec3 lookat(0, 0, 0);
+	//Vec3 lookat(0, 0, 0);
+	Vec3 lookat(5, 0, 5);
+
 	Camera *camera = new Camera(lookfrom, lookat, upVector,
 		20.0f, (float)settings.width / (float)settings.height,
-		0.05f, (lookfrom - lookat).length());
+		0.01f, (lookfrom - lookat).length());
 	scene.setCamera(camera);
 
 	PathTracer pathTracer(settings, scene);
