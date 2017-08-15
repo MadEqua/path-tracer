@@ -85,7 +85,7 @@ void initScene(Scene &scene) {
 void initScene2(Scene &scene) {
 
 	Texture *constTex = new ConstantTexture(Vec3(0.8f, 0.8f, 0.95f));
-	Texture *wallTex = new FileTexture("../resources/165.jpg");
+	Texture *wallTex = new FileTexture("../resources/test3.jpg");
 	Texture *checkerTex = new CheckerTexture(Vec3(0.2f, 0.3f, 0.1f), Vec3(0.8f));
 	Texture *normalMap = new FileTexture("../resources/165_norm.jpg", false);
 	Texture *normalMap2 = new FileTexture("../resources/normal.jpg", false);
@@ -101,17 +101,17 @@ void initScene2(Scene &scene) {
 	Material *metalChecker = new Metal(checkerTex, normalMap2, 0.0f, 40.0f, 1200.0f);
 	scene.addMaterial(metalChecker);
 
-	Material *lam = new Lambertian(wallTex, normalMap, 2, 2);
+	Material *lam = new Lambertian(wallTex, 2, 2);
 	scene.addMaterial(lam);
 
 	Material *di = new Dielectric(constTex, normalMap3, 1.1f, 2, 2);
 	scene.addMaterial(di);
 
-	Material *metal2 = new Metal(constTex, normalMap3, 0.f, 2, 2);
+	Material *metal2 = new Metal(constTex, normalMap3, 0.0f, 2, 2);
 	scene.addMaterial(metal2);
 
 	scene.addObject(new Sphere(Vec3(0, -1000, 0), 1000.0f, metalChecker));
-	scene.addObject(new Sphere(Vec3(5.0f, 0.95f, 5.0f), 1.0f, di));
+	scene.addObject(new Sphere(Vec3(5.0f, 0.95f, 5.0f), 1.0f, metal2));
 	scene.addObject(new Sphere(Vec3(4.0f, 0.45f, 6.2f), 0.5f, lam));
 	scene.addObject(new Sphere(Vec3(6.2f, 0.45f, 4.0f), 0.5f, metal2));
 }

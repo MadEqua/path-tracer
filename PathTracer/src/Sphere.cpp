@@ -54,26 +54,18 @@ void Sphere::computeHitRecord(const Ray &ray, float t, HitRecord &hitRecord) con
 	hitRecord.point = ray.pointAtParameter(t);
 	
 	Vec3 localCoord = hitRecord.point - center;
-	float theta = asin(localCoord.y / radius); //[-pi/2,pi/2]
+	float theta = acos(localCoord.y / radius); //[0,pi]
 	float phi = atan2(localCoord.z, localCoord.x); //[-pi,+pi]
 
-	//TODO find a better method to compute tangents
-	float deltaPhi = phi + FLOAT_BIAS;
-	Vec3 deltaPoint(radius * cos(theta) * cos(deltaPhi),
-		radius * sin(theta),
-		radius * cos(theta) * sin(deltaPhi));
+	hitRecord.u = 1.0f - ((phi + PI) / (2.0f * PI));
+	hitRecord.v = 1.0f - (theta / PI);
 
-	//Assume local space to be aligned with world space
-	//So this is also the tangent in world space
-	hitRecord.tangent = deltaPoint - localCoord;
+	const Vec3 phiAxis(0, 1, 0);
+	hitRecord.tangent = phiAxis.cross(localCoord);
 	hitRecord.tangent.normalize();
-
 	hitRecord.normal = localCoord / radius;
-	hitRecord.bitangent = hitRecord.tangent.cross(hitRecord.normal);
+	hitRecord.bitangent = hitRecord.normal.cross(hitRecord.tangent);
 	hitRecord.bitangent.normalize();
 
 	hitRecord.material = material;
-
-	hitRecord.u = 1.0f - ((phi + PI) / (2.0f * PI));
-	hitRecord.v = (theta + PI / 2.0f) / PI;
 }
