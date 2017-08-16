@@ -13,6 +13,10 @@
 class Scene;
 class Ray;
 
+enum FileFormat {
+	BMP, PNG, JPG
+};
+
 struct RenderSettings {
 	uint32 width, height;
 	uint32 samples;
@@ -20,6 +24,7 @@ struct RenderSettings {
 	uint32 tileSize;
 	uint32 threads;
 	std::string outputFileName;
+	FileFormat outputFileFormat;
 };
 
 class PathTracer

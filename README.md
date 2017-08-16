@@ -1,5 +1,5 @@
 # path-tracer
-Extensible multi-threaded Path-Tracer in C++.
+Multi-threaded Monte Carlo Path-Tracer in C++.
 
 # Current Features
 - Objects: spheres.

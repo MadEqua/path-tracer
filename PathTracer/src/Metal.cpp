@@ -24,15 +24,17 @@ bool Metal::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation
 	
 	Vec3 inDirection = in.direction;
 	inDirection.normalize();
-
+	
 	scattered.set(hitRecord.point, Utils::reflect(inDirection, normal) + fuzziness * Utils::randomInUnitSphere());
 	scattered.direction.normalize();
 
-	if (scattered.direction.dot(normal) > 0.0f) {
+	if (scattered.direction.dot(hitRecord.normal) > 0.0f) {
 		attenuation = albedo->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV);
 		return true;
 	}
-	//Absorb possible reflections to the "inside" (possible due to the fuzziness random operation)
+	//Absorb possible reflections to the "inside" 
+	//Possible due to the fuzziness random operation and normal maps
+	//Actually, normal mapping creates a lot of rays that should be self-reflected but will be "absorbed"...
 	else {
 		return false;
 	}

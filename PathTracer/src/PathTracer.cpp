@@ -43,8 +43,19 @@ void PathTracer::renderScene() {
 		threadPool[i].join();
 	}
 
-	stbi_write_bmp(settings.outputFileName.c_str(), settings.width, settings.height, 3, imageBuffer);
-	//stbi_write_jpg((settings.outputFileName + ".jpg").c_str(), settings.width, settings.height, 3, imageBuffer, 100);
+	switch (settings.outputFileFormat)
+	{
+	case BMP:
+		stbi_write_bmp((settings.outputFileName + ".bmp").c_str(), settings.width, settings.height, 3, imageBuffer);
+		break;
+	case JPG:
+		stbi_write_jpg((settings.outputFileName + ".jpg").c_str(), settings.width, settings.height, 3, imageBuffer, 100);
+		break;
+	case PNG:
+	default:
+		stbi_write_png((settings.outputFileName + ".png").c_str(), settings.width, settings.height, 3, imageBuffer, 0);
+		break;
+	}
 }
 
 void PathTracer::renderTile(int threadId) {
