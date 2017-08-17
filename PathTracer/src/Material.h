@@ -9,16 +9,19 @@ class Texture;
 class Material
 {
 public:
-	Material() : albedo(nullptr), normalMap(nullptr) {}
-	Material(const Texture *albedo, float textureScaleU, float textureScaleV) : albedo(albedo), normalMap(nullptr), textureScaleU(textureScaleU), textureScaleV(textureScaleV) {}
-	Material(const Texture *albedo, const Texture *normalMap, float textureScaleU, float textureScaleV) : albedo(albedo), normalMap(normalMap), textureScaleU(textureScaleU), textureScaleV(textureScaleV) {}
+	Material();
+	Material(const Texture *albedo, float textureScaleU, float textureScaleV, bool emissive);
+	Material(const Texture *albedo, const Texture *normalMap, float textureScaleU, float textureScaleV, bool emissive);
 	virtual ~Material() = default;
+	
 	virtual bool scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const = 0;
+	virtual Vec3 emit(float u, float v) const;
 
 protected:
 	const Texture *albedo;
 	const Texture *normalMap;
 	float textureScaleU, textureScaleV;
+	bool emissive;
 
 	Vec3 getNormal(const HitRecord &hitRecord) const;
 };

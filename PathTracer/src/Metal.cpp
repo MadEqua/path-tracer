@@ -11,7 +11,7 @@ Metal::Metal(const Texture *albedo, float fuzziness, float textureScaleU, float 
 }
 
 Metal::Metal(const Texture *albedo, const Texture *normalMap, float fuzziness, float textureScaleU, float textureScaleV) :
-	Material(albedo, normalMap, textureScaleU, textureScaleV) {
+	Material(albedo, normalMap, textureScaleU, textureScaleV, false) {
 	if (fuzziness < 1.0f)
 		this->fuzziness = fuzziness;
 	else

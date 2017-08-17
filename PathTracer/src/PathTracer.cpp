@@ -45,13 +45,13 @@ void PathTracer::renderScene() {
 
 	switch (settings.outputFileFormat)
 	{
-	case BMP:
+	case FileFormat::BMP:
 		stbi_write_bmp((settings.outputFileName + ".bmp").c_str(), settings.width, settings.height, 3, imageBuffer);
 		break;
-	case JPG:
+	case FileFormat::JPG:
 		stbi_write_jpg((settings.outputFileName + ".jpg").c_str(), settings.width, settings.height, 3, imageBuffer, 100);
 		break;
-	case PNG:
+	case FileFormat::PNG:
 	default:
 		stbi_write_png((settings.outputFileName + ".png").c_str(), settings.width, settings.height, 3, imageBuffer, 0);
 		break;
@@ -82,6 +82,8 @@ void PathTracer::renderTile(int threadId) {
 		const int tileOffsetX = settings.tileSize * (tile % numXtiles);
 		const int tileOffsetY = settings.tileSize * (tile / numXtiles);
 
+		const float inverseSamples = 1.0f / static_cast<float>(settings.samples);
+
 		for (uint32 y = tileOffsetY; y < tileOffsetY + settings.tileSize && y < settings.height; y++) {
 			for (uint32 x = tileOffsetX; x < tileOffsetX + settings.tileSize && x < settings.width; x++) {
 
@@ -96,7 +98,9 @@ void PathTracer::renderTile(int threadId) {
 					statistics.primaryRays++;
 				}
 
-				color /= static_cast<float>(settings.samples);
+				color *= inverseSamples;
+				color.clamp(0.0f, 1.0f);
+
 				Vec3 srgb = Utils::rgbToSrgb(color);
 
 				uint32 invertedY = settings.height - 1 - y;
@@ -117,19 +121,22 @@ Vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &statisti
 	HitRecord hitRecord;
 	statistics.maxDepthReached = Utils::max(statistics.maxDepthReached, depth);
 
-	if (scene.hit(ray, FLOAT_BIAS, FLT_MAX, hitRecord, statistics)) {
+	if (scene.hit(ray, FLOAT_BIAS, INF_FLOAT32, hitRecord, statistics)) {
 
 		Ray scattered;
 		Vec3 attenuation;
 
 		if (depth < settings.maxRayDepth) {
+			
+			Vec3 emission = hitRecord.material->emit(hitRecord.u, hitRecord.v);
+			
 			if (hitRecord.material->scatter(ray, hitRecord, attenuation, scattered)) {
 				statistics.scatteredRays++;
-				return attenuation * computeColor(scattered, depth + 1, statistics);
+				return emission + attenuation * computeColor(scattered, depth + 1, statistics);
 			}
 			else {
 				statistics.absorbedRays++;
-				return Vec3(0.0f);
+				return emission;
 			}
 		}
 		else {
@@ -138,9 +145,13 @@ Vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &statisti
 		}
 	}
 
-	ray.direction.normalize();
+	return Vec3(0.0f);
+
+	/*ray.direction.normalize();
 	float t = 0.5f * (ray.direction.y + 1.0f);
-	return (1.0f - t) * Vec3(1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
+	return (1.0f - t) * Vec3(0.0f, 0.0f, 0.1f) + t * Vec3(0.25f, 0.46f, 0.78f);*/
+
+	//return (1.0f - t) * Vec3(1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
 }
 
 void PathTracer::printPreRender() const {

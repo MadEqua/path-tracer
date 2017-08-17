@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cfloat>
+
 //Integers
 //1 byte
 typedef unsigned char byte;
@@ -23,7 +25,7 @@ typedef float f32;
 typedef double f64;
 
 
-//Max values
+//Limit values
 const uint8 MAX_UINT8 = 255;
 const uint8 MAX_INT8 = 127;
 
@@ -35,3 +37,6 @@ const uint32 MAX_INT32 = 2147483647;
 
 const uint64 MAX_UINT64 = 18446744073709551615;
 const uint64 MAX_INT64 = 9223372036854775807;
+
+const f32 INF_FLOAT32 = HUGE_VALF;
+const f64 INF_FLOAT64 = HUGE_VAL;

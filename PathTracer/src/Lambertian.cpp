@@ -7,11 +7,11 @@
 #include "Texture.h"
 
 Lambertian::Lambertian(const Texture *texture, float textureScaleU, float textureScaleV) :
-	Material(texture, textureScaleU, textureScaleV) {
+	Material(texture, textureScaleU, textureScaleV, false) {
 }
 
 Lambertian::Lambertian(const Texture *texture, const Texture *normalMap, float textureScaleU, float textureScaleV) :
-	Material(texture, normalMap, textureScaleU, textureScaleV) {
+	Material(texture, normalMap, textureScaleU, textureScaleV, false) {
 }
 
 bool Lambertian::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const {

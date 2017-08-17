@@ -10,11 +10,13 @@ Dielectric::Dielectric(float refractionIndex) : refractionIndex(refractionIndex)
 }
 
 Dielectric::Dielectric(const Texture *albedo, float refractionIndex, float textureScaleU, float textureScaleV) :
-	Material(albedo, textureScaleU, textureScaleV), refractionIndex(refractionIndex) {
+	Material(albedo, textureScaleU, textureScaleV, false), 
+	refractionIndex(refractionIndex) {
 }
 
 Dielectric::Dielectric(const Texture *albedo, const Texture *normalMap, float refractionIndex, float textureScaleU, float textureScaleV) :
-	Material(albedo, normalMap, textureScaleU, textureScaleV), refractionIndex(refractionIndex) {
+	Material(albedo, normalMap, textureScaleU, textureScaleV, false),
+	refractionIndex(refractionIndex) {
 }
 
 bool Dielectric::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const {

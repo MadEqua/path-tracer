@@ -119,6 +119,7 @@
     <ClCompile Include="src\CheckerTexture.cpp" />
     <ClCompile Include="src\ConstantTexture.cpp" />
     <ClCompile Include="src\Dielectric.cpp" />
+    <ClCompile Include="src\LightMaterial.cpp" />
     <ClCompile Include="src\FileTexture.cpp" />
     <ClCompile Include="src\Lambertian.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -127,6 +128,7 @@
     <ClCompile Include="src\Metal.cpp" />
     <ClCompile Include="src\PathTracer.cpp" />
     <ClCompile Include="src\Ray.cpp" />
+    <ClCompile Include="src\Rectangle.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Sphere.cpp" />
     <ClCompile Include="src\Timer.cpp" />
@@ -140,6 +142,7 @@
     <ClInclude Include="src\CheckerTexture.h" />
     <ClInclude Include="src\ConstantTexture.h" />
     <ClInclude Include="src\Dielectric.h" />
+    <ClInclude Include="src\LightMaterial.h" />
     <ClInclude Include="src\FileTexture.h" />
     <ClInclude Include="src\Hitable.h" />
     <ClInclude Include="src\HitRecord.h" />
@@ -150,6 +153,7 @@
     <ClInclude Include="src\Object.h" />
     <ClInclude Include="src\PathTracer.h" />
     <ClInclude Include="src\Ray.h" />
+    <ClInclude Include="src\Rectangle.h" />
     <ClInclude Include="src\RenderStatistics.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Sphere.h" />

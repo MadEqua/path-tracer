@@ -16,3 +16,10 @@ void Vec3::normalize() {
 	y *= k;
 	z *= k;
 }
+
+void Vec3::clamp(float min, float max) {
+	for (int i = 0; i < 3; ++i) {
+		if (values[i] < min) values[i] = min;
+		else if (values[i] > max) values[i] = max;
+	}
+}
