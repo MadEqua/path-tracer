@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vec3.h"
+#include <glm/vec3.hpp>
 
 class Ray;
 struct HitRecord;
@@ -14,8 +14,8 @@ public:
 	Material(const Texture *albedo, const Texture *normalMap, float textureScaleU, float textureScaleV, bool emissive);
 	virtual ~Material() = default;
 	
-	virtual bool scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const = 0;
-	virtual Vec3 emit(float u, float v) const;
+	virtual bool scatter(const Ray &in, const HitRecord &hitRecord, glm::vec3 &attenuation, Ray &scattered) const = 0;
+	virtual glm::vec3 emit(float u, float v) const;
 
 protected:
 	const Texture *albedo;
@@ -23,5 +23,5 @@ protected:
 	float textureScaleU, textureScaleV;
 	bool emissive;
 
-	Vec3 getNormal(const HitRecord &hitRecord) const;
+	glm::vec3 getNormal(const HitRecord &hitRecord) const;
 };

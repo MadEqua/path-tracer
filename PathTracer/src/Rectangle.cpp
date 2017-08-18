@@ -30,8 +30,8 @@ bool Rectangle::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord
 	else {
 		hitRecord.point = ray.pointAtParameter(t);
 
-		float a = hitRecord.point.values[(axis + 1) % 3];
-		float b = hitRecord.point.values[(axis + 2) % 3];
+		float a = hitRecord.point[(axis + 1) % 3];
+		float b = hitRecord.point[(axis + 2) % 3];
 
 		//The point is on the plane but not on the rectangle
 		if (a < minA || a > maxA || b < minB || b > maxB) {
@@ -58,19 +58,19 @@ bool Rectangle::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord
 		switch (axis)
 		{
 		case X:
-			hitRecord.tangent.set(0, 0, 1);
-			hitRecord.normal.set(-1, 0, 0);
-			hitRecord.bitangent.set(0, 1, 0);
+			hitRecord.tangent = glm::vec3(0.0f, 0.0f, 1.0f);
+			hitRecord.normal = glm::vec3(-1.0f, 0.0f, 0.0f);
+			hitRecord.bitangent = glm::vec3(0.0f, 1.0f, 0.0f);
 			break;
 		case Y:
-			hitRecord.tangent.set(1, 0, 0);
-			hitRecord.normal.set(0, 1, 0);
-			hitRecord.bitangent.set(0, 0, 1);
+			hitRecord.tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+			hitRecord.normal = glm::vec3(0.0f, 1.0f, 0.0f);
+			hitRecord.bitangent = glm::vec3(0.0f, 0.0f, 1.0f);
 			break;
 		case Z:
-			hitRecord.tangent.set(1, 0, 0);
-			hitRecord.normal.set(0, 0, -1);
-			hitRecord.bitangent.set(0, 1, 0);
+			hitRecord.tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+			hitRecord.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+			hitRecord.bitangent = glm::vec3(0.0f, 1.0f, 0.0f);
 			break;
 		}
 		return true;
@@ -81,16 +81,16 @@ bool Rectangle::boundingBox(float t0, float t1, AABB &aabb) const {
 	switch (axis)
 	{
 	case X:
-		aabb.min.set(distToOrigin - 0.01f, minA, minB);
-		aabb.max.set(distToOrigin + 0.01f, maxA, maxB);
+		aabb.min = glm::vec3(distToOrigin - 0.01f, minA, minB);
+		aabb.max = glm::vec3(distToOrigin + 0.01f, maxA, maxB);
 		break;
 	case Y:
-		aabb.min.set(minA, distToOrigin - 0.01f, minB);
-		aabb.max.set(maxA, distToOrigin + 0.01f, maxB);
+		aabb.min = glm::vec3(minA, distToOrigin - 0.01f, minB);
+		aabb.max = glm::vec3(maxA, distToOrigin + 0.01f, maxB);
 		break;
 	case Z:
-		aabb.min.set(minA, minB, distToOrigin - 0.01f);
-		aabb.max.set(maxA, maxB, distToOrigin + 0.01f);
+		aabb.min = glm::vec3(minA, minB, distToOrigin - 0.01f);
+		aabb.max = glm::vec3(maxA, maxB, distToOrigin + 0.01f);
 		break;
 	}
 

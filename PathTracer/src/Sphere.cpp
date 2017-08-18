@@ -1,6 +1,7 @@
 #include "Sphere.h"
 
 #include <cmath>
+#include <glm/glm.hpp>
 
 #include "HitRecord.h"
 #include "Ray.h"
@@ -9,7 +10,7 @@
 #include "Utils.h"
 
 
-Sphere::Sphere(const Vec3 &center, float radius, Material *material) :
+Sphere::Sphere(const glm::vec3 &center, float radius, Material *material) :
 	Object(material),
 	center(center), radius(radius) {
 }
@@ -17,10 +18,10 @@ Sphere::Sphere(const Vec3 &center, float radius, Material *material) :
 bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, RenderStatistics &statistics) const {
 	statistics.objectIntersectionsComputed++;
 	
-	Vec3 oc = ray.origin - center;
-	float a = ray.direction.dot(ray.direction);
-	float b = oc.dot(ray.direction);
-	float c = oc.dot(oc) - radius * radius;
+	glm::vec3 oc = ray.origin - center;
+	float a = glm::dot(ray.direction, ray.direction);
+	float b = glm::dot(oc, ray.direction);
+	float c = glm::dot(oc, oc) - radius * radius;
 	float discriminant = b * b - a * c;
 
 	float t;
@@ -43,7 +44,7 @@ bool Sphere::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, R
 }
 
 bool Sphere::boundingBox(float t0, float t1, AABB &aabb) const {
-	Vec3 radiusVec(radius);
+	glm::vec3 radiusVec(radius);
 	aabb.set(center - radiusVec, center + radiusVec);
 	return true;
 }
@@ -53,19 +54,17 @@ void Sphere::computeHitRecord(const Ray &ray, float t, HitRecord &hitRecord) con
 	hitRecord.t = t;
 	hitRecord.point = ray.pointAtParameter(t);
 	
-	Vec3 localCoord = hitRecord.point - center;
+	glm::vec3 localCoord = hitRecord.point - center;
 	float theta = acos(localCoord.y / radius); //[0,pi]
 	float phi = atan2(localCoord.z, localCoord.x); //[-pi,+pi]
 
 	hitRecord.u = 1.0f - ((phi + PI) / (2.0f * PI));
 	hitRecord.v = 1.0f - (theta / PI);
 
-	const Vec3 phiAxis(0, 1, 0);
-	hitRecord.tangent = phiAxis.cross(localCoord);
-	hitRecord.tangent.normalize();
+	const glm::vec3 phiAxis(0, 1, 0);
+	hitRecord.tangent = glm::normalize(glm::cross(phiAxis, localCoord));
 	hitRecord.normal = localCoord / radius;
-	hitRecord.bitangent = hitRecord.normal.cross(hitRecord.tangent);
-	hitRecord.bitangent.normalize();
+	hitRecord.bitangent = glm::normalize(glm::cross(hitRecord.normal, hitRecord.tangent));
 
 	hitRecord.material = material;
 }

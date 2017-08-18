@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vec3.h"
+#include <glm/vec3.hpp>
 
 class Ray;
 
@@ -8,12 +8,12 @@ class AABB
 {
 public:
 	AABB() = default;
-	AABB(const Vec3 &min, const Vec3 &max);
+	AABB(const glm::vec3 &min, const glm::vec3 &max);
 
-	inline void set(const Vec3 &min, const Vec3 &max) { this->min = min; this->max = max; }
+	inline void set(const glm::vec3 &min, const glm::vec3 &max) { this->min = min; this->max = max; }
 	void enclose(const AABB &aabb);
 
 	bool hit(const Ray &ray, float tMin, float tMax) const;
 
-	Vec3 min, max;
+	glm::vec3 min, max;
 };

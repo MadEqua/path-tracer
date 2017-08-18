@@ -1,7 +1,8 @@
 #include "Lambertian.h"
 
+#include <glm/gtc/random.hpp>
+
 #include "Utils.h"
-#include "Vec3.h"
 #include "HitRecord.h"
 #include "Ray.h"
 #include "Texture.h"
@@ -14,10 +15,10 @@ Lambertian::Lambertian(const Texture *texture, const Texture *normalMap, float t
 	Material(texture, normalMap, textureScaleU, textureScaleV, false) {
 }
 
-bool Lambertian::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const {
+bool Lambertian::scatter(const Ray &in, const HitRecord &hitRecord, glm::vec3 &attenuation, Ray &scattered) const {
 	//TODO: scatter with prob p and attenuation = albedo/p ??
-	Vec3 normal = getNormal(hitRecord);
-	Vec3 targetPoint = hitRecord.point + normal + Utils::randomInUnitSphere();
+	glm::vec3 normal = getNormal(hitRecord);
+	glm::vec3 targetPoint = hitRecord.point + normal + glm::ballRand(1.0f);
 	scattered.set(hitRecord.point, targetPoint - hitRecord.point);
 	attenuation = albedo->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV);
 	return true;

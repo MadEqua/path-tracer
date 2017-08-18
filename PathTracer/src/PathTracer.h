@@ -6,8 +6,8 @@
 #include <vector>
 #include <thread>
 
+#include <glm/vec3.hpp>
 #include "Types.h"
-#include "Vec3.h"
 #include "RenderStatistics.h"
 
 class Scene;
@@ -49,7 +49,7 @@ private:
 	byte *imageBuffer;
 
 	void renderTile(int threadId);
-	Vec3 computeColor(Ray &ray, uint32 depth, RenderStatistics &statistics);
+	glm::vec3 computeColor(Ray &ray, uint32 depth, RenderStatistics &statistics);
 };
 
 inline std::ostream& operator<<(std::ostream &os, const RenderSettings &settings) {

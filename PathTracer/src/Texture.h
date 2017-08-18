@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Vec3.h"
+#include <glm/vec3.hpp>
 
 class Texture
 {
 public:
 	virtual ~Texture() = default;
-	virtual Vec3 value(float u, float v, float scaleU, float scaleV) const = 0;
+	virtual glm::vec3 value(float u, float v, float scaleU, float scaleV) const = 0;
 };
 

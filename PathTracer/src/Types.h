@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cfloat>
+#include <cmath>
 
 //Integers
 //1 byte

@@ -1,8 +1,9 @@
 #pragma once
 
+#include <iostream>
+
 #include "Types.h"
 #include "Timer.h"
-#include <cstring>
 
 struct RenderStatistics {
 	uint32 totalRenderedPixels;

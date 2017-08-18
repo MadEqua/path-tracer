@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <algorithm> 
+#include <glm/gtc/random.hpp>
 
 #include "Object.h"
 #include "HitRecord.h"
@@ -25,7 +26,7 @@ BvhNode::BvhNode(std::vector<const Object*> &objects, uint32 l, uint32 r, float 
 	auto begin = objects.begin() + l;
 	auto end = objects.begin() + r;
 
-	int axis = static_cast<int>(Utils::random0To1() * 3.0f);
+	int axis = static_cast<int>(glm::linearRand(0.0f, 1.0f) * 3.0f);
 	Comparator comparator(axis);
 	std::sort(begin, end + 1, comparator);
 

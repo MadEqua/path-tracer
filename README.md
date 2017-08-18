@@ -2,8 +2,9 @@
 Multi-threaded Monte Carlo Path-Tracer in C++.
 
 # Current Features
-- Objects: spheres.
+- Objects: spheres, planes.
 - Materials: Lambertian, Dielectrics and Metals.
+- Area lights. Every object can be a light by having an emissive material.
 - Camera positioning and aperture/focal distance (depth of field) simulation.
 - Image and procedural textures.
 - Normal mapping.

@@ -68,7 +68,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)libs\glm-0.9.8.5;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)libs\glm-0.9.8.5;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -93,6 +98,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -123,7 +130,6 @@
     <ClCompile Include="src\FileTexture.cpp" />
     <ClCompile Include="src\Lambertian.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Mat3.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Metal.cpp" />
     <ClCompile Include="src\PathTracer.cpp" />
@@ -133,7 +139,6 @@
     <ClCompile Include="src\Sphere.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Utils.cpp" />
-    <ClCompile Include="src\Vec3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AABB.h" />
@@ -147,7 +152,6 @@
     <ClInclude Include="src\Hitable.h" />
     <ClInclude Include="src\HitRecord.h" />
     <ClInclude Include="src\Lambertian.h" />
-    <ClInclude Include="src\Mat3.h" />
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\Metal.h" />
     <ClInclude Include="src\Object.h" />
@@ -163,7 +167,6 @@
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\Types.h" />
     <ClInclude Include="src\Utils.h" />
-    <ClInclude Include="src\Vec3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

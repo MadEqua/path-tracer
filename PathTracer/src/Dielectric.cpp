@@ -1,8 +1,10 @@
 #include "Dielectric.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/random.hpp>
+
 #include "Utils.h"
 #include "HitRecord.h"
-#include "Vec3.h"
 #include "Ray.h"
 #include "Texture.h"
 
@@ -19,35 +21,34 @@ Dielectric::Dielectric(const Texture *albedo, const Texture *normalMap, float re
 	refractionIndex(refractionIndex) {
 }
 
-bool Dielectric::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const {
+bool Dielectric::scatter(const Ray &in, const HitRecord &hitRecord, glm::vec3 &attenuation, Ray &scattered) const {
 	
-	Vec3 normal = getNormal(hitRecord);
+	glm::vec3 normal = getNormal(hitRecord);
 	
-	Vec3 outwardNormal;
+	glm::vec3 outwardNormal;
 	float niOverNt;
 	float cosine;
 
-	Vec3 inDirection = in.direction;
-	inDirection.normalize();
+	glm::vec3 inDirection = glm::normalize(in.direction);
 
-	if (inDirection.dot(normal) > 0.0f) { //outside
+	if (glm::dot(inDirection, normal) > 0.0f) { //outside
 		outwardNormal = -normal;
 		niOverNt = refractionIndex;
-		cosine = refractionIndex * inDirection.dot(normal);
+		cosine = refractionIndex * glm::dot(inDirection, normal);
 	}
 	else { //inside
 		outwardNormal = normal;
 		niOverNt = 1.0f / refractionIndex;
-		cosine = -inDirection.dot(normal);
+		cosine = -glm::dot(inDirection, normal);
 	}
 
-	Vec3 reflected = Utils::reflect(inDirection, normal);
-	Vec3 refracted;
+	glm::vec3 reflected = glm::reflect(inDirection, normal);
+	glm::vec3 refracted;
 
 	if (Utils::refract(inDirection, outwardNormal, niOverNt, refracted)) {
 		float reflectProb = Utils::shlick(cosine, refractionIndex);
 
-		if (Utils::random0To1() < reflectProb) {
+		if (glm::linearRand(0.0f, 1.0f) < reflectProb) {
 			scattered.set(hitRecord.point, reflected);
 		}
 		else {
@@ -63,7 +64,7 @@ bool Dielectric::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenu
 		attenuation = albedo->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV);
 	}
 	else {
-		attenuation.set(1.0f);
+		attenuation.x = attenuation.y = attenuation.z = 1.0f;
 	}
 
 	return true;

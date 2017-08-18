@@ -3,8 +3,10 @@
 #include <iostream>
 #include <thread>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/random.hpp>
+
 #include "Ray.h"
-#include "Vec3.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "Utils.h"
@@ -67,7 +69,7 @@ void PathTracer::renderTile(int threadId) {
 	const uint32 numTiles = numXtiles * numYtiles;
 
 	Ray ray;
-	Vec3 color;
+	glm::vec3 color;
 
 	statistics.timer.start();
 
@@ -87,11 +89,11 @@ void PathTracer::renderTile(int threadId) {
 		for (uint32 y = tileOffsetY; y < tileOffsetY + settings.tileSize && y < settings.height; y++) {
 			for (uint32 x = tileOffsetX; x < tileOffsetX + settings.tileSize && x < settings.width; x++) {
 
-				color.set(0.0f);
+				color.r = color.g = color.b = 0.0f;
 
 				for (uint32 s = 0; s < settings.samples; ++s) {
-					float u = static_cast<float>(x + Utils::random0To1()) / static_cast<float>(settings.width - 1.0f);
-					float v = static_cast<float>(y + Utils::random0To1()) / static_cast<float>(settings.height - 1.0f);
+					float u = static_cast<float>(x + glm::linearRand(0.0f, 1.0f)) / static_cast<float>(settings.width - 1.0f);
+					float v = static_cast<float>(y + glm::linearRand(0.0f, 1.0f)) / static_cast<float>(settings.height - 1.0f);
 
 					ray = scene.getCamera()->getRay(u, v);
 					color += computeColor(ray, 0, statistics);
@@ -99,9 +101,9 @@ void PathTracer::renderTile(int threadId) {
 				}
 
 				color *= inverseSamples;
-				color.clamp(0.0f, 1.0f);
+				color = glm::clamp(color, 0.0f, 1.0f);
 
-				Vec3 srgb = Utils::rgbToSrgb(color);
+				glm::vec3 srgb = Utils::rgbToSrgb(color);
 
 				uint32 invertedY = settings.height - 1 - y;
 				byte *ptr = imageBuffer + ((settings.width * invertedY) + x) * 3;
@@ -116,7 +118,7 @@ void PathTracer::renderTile(int threadId) {
 	}
 }
 
-Vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &statistics) {
+glm::vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &statistics) {
 
 	HitRecord hitRecord;
 	statistics.maxDepthReached = Utils::max(statistics.maxDepthReached, depth);
@@ -124,11 +126,11 @@ Vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &statisti
 	if (scene.hit(ray, FLOAT_BIAS, INF_FLOAT32, hitRecord, statistics)) {
 
 		Ray scattered;
-		Vec3 attenuation;
+		glm::vec3 attenuation;
 
 		if (depth < settings.maxRayDepth) {
 			
-			Vec3 emission = hitRecord.material->emit(hitRecord.u, hitRecord.v);
+			glm::vec3 emission = hitRecord.material->emit(hitRecord.u, hitRecord.v);
 			
 			if (hitRecord.material->scatter(ray, hitRecord, attenuation, scattered)) {
 				statistics.scatteredRays++;
@@ -141,17 +143,17 @@ Vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &statisti
 		}
 		else {
 			statistics.raysReachedMaxDepth++;
-			return Vec3(0.0f);
+			return glm::vec3(0.0f);
 		}
 	}
 
-	return Vec3(0.0f);
+	return glm::vec3(0.0f);
 
-	/*ray.direction.normalize();
-	float t = 0.5f * (ray.direction.y + 1.0f);
-	return (1.0f - t) * Vec3(0.0f, 0.0f, 0.1f) + t * Vec3(0.25f, 0.46f, 0.78f);*/
+	/*glm::vec3 dir = glm::normalize(ray.direction);
+	float t = 0.5f * (dir.y + 1.0f);
+	return (1.0f - t) * glm::vec3(0.0f, 0.0f, 0.1f) + t * glm::vec3(0.25f, 0.46f, 0.78f);*/
 
-	//return (1.0f - t) * Vec3(1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
+	//return (1.0f - t) * glm::vec3(1.0f) + t * glm::vec3(0.5f, 0.7f, 1.0f);
 }
 
 void PathTracer::printPreRender() const {

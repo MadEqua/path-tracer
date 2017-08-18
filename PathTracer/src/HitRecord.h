@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Vec3.h"
+#include <glm/vec3.hpp>
 
 class Material;
 
 struct HitRecord {
 	float t;
-	Vec3 point;
-	Vec3 tangent;
-	Vec3 bitangent;
-	Vec3 normal;
+	glm::vec3 point;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
+	glm::vec3 normal;
 	float u, v; //Texture coordinates
 	Material *material;
 };

@@ -19,14 +19,14 @@ FileTexture::~FileTexture() {
 	}
 }
 
-Vec3 FileTexture::value(float u, float v, float scaleU, float scaleV) const {
+glm::vec3 FileTexture::value(float u, float v, float scaleU, float scaleV) const {
 	int s = static_cast<int>(Utils::decimalPart(u * scaleU) * static_cast<float>(width - 1));
 	int t = static_cast<int>(Utils::decimalPart(v * scaleV) * static_cast<float>(height - 1));
 
 	uint32 invertedY = height - 1 - t;
 	byte *texel = data + ((invertedY * width) + s) * numberOfComponents;
 
-	Vec3 color(static_cast<float>(*texel) / 255.999f,
+	glm::vec3 color(static_cast<float>(*texel) / 255.999f,
 		static_cast<float>(*(texel + 1)) / 255.999f,
 		static_cast<float>(*(texel + 2)) / 255.999f);
 

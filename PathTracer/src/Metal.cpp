@@ -1,6 +1,8 @@
 #include "Metal.h"
 
-#include "Vec3.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/random.hpp>
+
 #include "HitRecord.h"
 #include "Ray.h"
 #include "Utils.h"
@@ -18,17 +20,14 @@ Metal::Metal(const Texture *albedo, const Texture *normalMap, float fuzziness, f
 		this->fuzziness = 1.0f;
 }
 
-bool Metal::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const {
+bool Metal::scatter(const Ray &in, const HitRecord &hitRecord, glm::vec3 &attenuation, Ray &scattered) const {
 	
-	Vec3 normal = getNormal(hitRecord);
-	
-	Vec3 inDirection = in.direction;
-	inDirection.normalize();
-	
-	scattered.set(hitRecord.point, Utils::reflect(inDirection, normal) + fuzziness * Utils::randomInUnitSphere());
-	scattered.direction.normalize();
+	glm::vec3 normal = getNormal(hitRecord);
 
-	if (scattered.direction.dot(hitRecord.normal) > 0.0f) {
+	glm::vec3 inDirection = glm::normalize(in.direction);
+	scattered.set(hitRecord.point, glm::normalize(glm::reflect(inDirection, normal) + fuzziness * glm::ballRand(1.0f)));
+
+	if (glm::dot(scattered.direction, hitRecord.normal) > 0.0f) {
 		attenuation = albedo->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV);
 		return true;
 	}

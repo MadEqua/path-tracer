@@ -6,6 +6,6 @@ LightMaterial::LightMaterial(const Texture *emission, float textureScaleU, float
 	Material(emission, textureScaleU, textureScaleV, true) {
 }
 
-bool LightMaterial::scatter(const Ray &in, const HitRecord &hitRecord, Vec3 &attenuation, Ray &scattered) const {
+bool LightMaterial::scatter(const Ray &in, const HitRecord &hitRecord, glm::vec3 &attenuation, Ray &scattered) const {
 	return false;
 }

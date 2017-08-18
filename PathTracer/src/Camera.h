@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Vec3.h"
+#include <glm/vec3.hpp>
 #include "Ray.h"
 
 class Camera
 {
 public:
-	Camera(const Vec3 &position, const Vec3 &lookAt, const Vec3 vUp,
+	Camera(const glm::vec3 &position, const glm::vec3 &lookAt, const glm::vec3 vUp,
 		float vFov, float aspectRatio,
 		float aperture, float focusDistance);
 
@@ -14,15 +14,15 @@ public:
 	Ray getRay(float x, float y) const;
 	
 private:
-	Vec3 position;
+	glm::vec3 position;
 
 	//"near plane" data in world coords
-	Vec3 lowerLeftCorner;
-	Vec3 horizontalAxis;
-	Vec3 verticalAxis;
+	glm::vec3 lowerLeftCorner;
+	glm::vec3 horizontalAxis;
+	glm::vec3 verticalAxis;
 
 	//Camera axis in world coords
-	Vec3 cameraX, cameraY, cameraZ;
+	glm::vec3 cameraX, cameraY, cameraZ;
 
 	float lensRadius;
 };

@@ -1,20 +1,22 @@
 #include "AABB.h"
 
+#include <algorithm>
+
 #include "Ray.h"
 #include "Utils.h"
 
 
-AABB::AABB(const Vec3 &min, const Vec3 &max) : min(min), max(max) {
+AABB::AABB(const glm::vec3 &min, const glm::vec3 &max) : min(min), max(max) {
 }
 
 void AABB::enclose(const AABB & aabb) {
-	min.set(Utils::min(min.x, aabb.min.x),
-		Utils::min(min.y, aabb.min.y),
-		Utils::min(min.z, aabb.min.z));
+	min.x = Utils::min(min.x, aabb.min.x);
+	min.y = Utils::min(min.y, aabb.min.y);
+	min.z = Utils::min(min.z, aabb.min.z);
 
-	max.set(Utils::max(max.x, aabb.max.x),
-		Utils::max(max.y, aabb.max.y),
-		Utils::max(max.z, aabb.max.z));
+	max.x = Utils::max(max.x, aabb.max.x);
+	max.y = Utils::max(max.y, aabb.max.y);
+	max.z = Utils::max(max.z, aabb.max.z);
 }
 
 bool AABB::hit(const Ray &ray, float tMin, float tMax) const {
