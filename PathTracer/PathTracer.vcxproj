@@ -138,6 +138,7 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Sphere.cpp" />
     <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\Transform.cpp" />
     <ClCompile Include="src\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -165,6 +166,7 @@
     <ClInclude Include="src\stb_image_write.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Timer.h" />
+    <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\Types.h" />
     <ClInclude Include="src\Utils.h" />
   </ItemGroup>

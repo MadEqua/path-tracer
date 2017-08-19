@@ -112,13 +112,13 @@ void initScene2(Scene &scene) {
 	scene.addTexture(normalMapFloor);
 	scene.addTexture(normalMapCells);
 
-	Material *floorMat = new Metal(floorTex, normalMapFloor, 0.1f, 1.0f, 1.0f);
+	Material *floorMat = new Metal(floorTex, normalMapFloor, 0.1f, 500.0f, 500.0f);
 	scene.addMaterial(floorMat);
 
 	Material *lam = new Lambertian(colorfulTex, 2, 2);
 	scene.addMaterial(lam);
 
-	Material *di = new Dielectric(constTexBlueish, normalMapCells, 1.1f, 2, 2);
+	Material *di = new Dielectric(constTexBlueish, normalMapCells, 1.1f, 3, 3);
 	scene.addMaterial(di);
 
 	Material *metal = new Metal(constTexGray, 0.4f, 2, 2);
@@ -127,18 +127,19 @@ void initScene2(Scene &scene) {
 	Material *light = new LightMaterial(constTexWhite);
 	scene.addMaterial(light);
 
-	//Material *lightGobo = new LightMaterial(checkerTex, 5, 5);
-	//scene.addMaterial(lightGobo);
+	scene.addObject(new Rectangle(Axis::X, 2.5f, 0.0f, 2.0f, 1.0f, light));
+	scene.addObject(new Rectangle(Axis::X, -3.0f, 0.0f, 2.5f, 1.5f, light));
 
-	scene.addObject(new Rectangle(Axis::X, 2.5f, 0, 1, -2, 2, light));
-	scene.addObject(new Rectangle(Axis::X, -3.0f, 0.0f, 0.5f, -0.5f, 0.5f, light));
-	scene.addObject(new Rectangle(Axis::Y, 2.5f, -2, 2, -2, 2, light));
-	scene.addObject(new Rectangle(Axis::Z, -2.5f, -1.2f, 1.2f, 0, 0.3f, light));
-	scene.addObject(new Rectangle(Axis::Y, 0.0f, floorMat));
+	scene.addObject(new Rectangle(Axis::Y, 2.5f, 0, 3.0f, 3.0f, light));
+	//scene.addObject(new Rectangle(Axis::Z, -2.5f, 0, 2.6f, 0.2f, light));
 
-	scene.addObject(new Sphere(glm::vec3(0.0f, 1.0f, 0.0f), 1.0f, metal));
+	scene.addObject(new Rectangle(Axis::Y, 0.0f, 0.0f, 1000.0f, 1000.0f, floorMat));
+
+	Object *sphere = new Sphere(glm::vec3(0.1f, 1.0f, 1.6f), 1.0f, di);
+	sphere->getTransform().scale(glm::vec3(1.5f, 1.0f, 0.4f));
+	scene.addObject(sphere);
 	scene.addObject(new Sphere(glm::vec3(-1.6f, 0.5f, 0.0f), 0.5f, lam));
-	scene.addObject(new Sphere(glm::vec3(1.6f, 0.5f, 0.0f), 0.5f, di));
+	scene.addObject(new Sphere(glm::vec3(1.6f, 0.5f, 0.0f), 0.5f, lam));
 }
 
 void initSceneCornell(Scene &scene) {
@@ -147,11 +148,13 @@ void initSceneCornell(Scene &scene) {
 	Texture *constTexWhite = new ConstantTexture(glm::vec3(0.73f));
 	Texture *constTexGreen = new ConstantTexture(glm::vec3(0.12f, 0.45f, 0.15f));
 	Texture *constTexWhiteLight = new ConstantTexture(glm::vec3(3.0f));
+	Texture *constTexGray = new ConstantTexture(glm::vec3(0.9f));
 
 	scene.addTexture(constTexRed);
 	scene.addTexture(constTexWhite);
 	scene.addTexture(constTexGreen);
 	scene.addTexture(constTexWhiteLight);
+	scene.addTexture(constTexGray);
 
 	Material *redMat = new Lambertian(constTexRed);
 	scene.addMaterial(redMat);
@@ -165,49 +168,57 @@ void initSceneCornell(Scene &scene) {
 	Material *light = new LightMaterial(constTexWhiteLight);
 	scene.addMaterial(light);
 
-	scene.addObject(new Rectangle(Axis::X, 1.0f, redMat));
-	scene.addObject(new Rectangle(Axis::X, -1.0f, greenMat));
-	scene.addObject(new Rectangle(Axis::Z, -1.0f, whiteMat));
-	scene.addObject(new Rectangle(Axis::Y, 2.0f, whiteMat));
-	scene.addObject(new Rectangle(Axis::Y, 0.0f, whiteMat));
+	Material *di = new Dielectric(1.2f);
+	scene.addMaterial(di);
 
-	const float LIGHT_SIZE = 0.2f;
-	scene.addObject(new Rectangle(Axis::Y, 1.95f, -LIGHT_SIZE, LIGHT_SIZE, -LIGHT_SIZE, LIGHT_SIZE, light));
+	Material *metal = new Metal(constTexGray, 0.3f);
+	scene.addMaterial(metal);
+
+	const float WALL_SIZE = 4.0f;
+	scene.addObject(new Rectangle(Axis::X, 1.0f, 0.0f, WALL_SIZE, WALL_SIZE, redMat));
+	scene.addObject(new Rectangle(Axis::X, -1.0f, 180.0f, WALL_SIZE, WALL_SIZE, greenMat));
+	scene.addObject(new Rectangle(Axis::Z, -1.0f, 0.0f, WALL_SIZE, WALL_SIZE, whiteMat));
+	scene.addObject(new Rectangle(Axis::Y, 2.0f, 180.0f, WALL_SIZE, WALL_SIZE, whiteMat));
+	scene.addObject(new Rectangle(Axis::Y, 0.0f, 0.0f, WALL_SIZE, WALL_SIZE, whiteMat));
+
+	const float LIGHT_SIZE = 0.7f;
+	scene.addObject(new Rectangle(Axis::Y, 1.95f, 0.0f, LIGHT_SIZE, LIGHT_SIZE, light));
+
+	scene.addObject(new Sphere(glm::vec3(0.5f, 0.3f, 0.1f), 0.3f, di));
+	scene.addObject(new Sphere(glm::vec3(-0.6f, 0.2f, -0.3f), 0.2f, metal));
 }
 
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 1200;
-	settings.height = 1000;
-	settings.samples = 100;
+	settings.width = 800;
+	settings.height = 800;
+	settings.samples = 400;
 	settings.maxRayDepth = 50;
 	settings.tileSize = 32;
 	settings.threads = 4;
-	settings.outputFileName = "output32";
+	settings.outputFileName = "output33";
 	settings.outputFileFormat = FileFormat::PNG;
 	
 	Scene scene;
-	initScene2(scene);
+	initSceneCornell(scene);
 
-	glm::vec3 lookfrom(0, 3, 8);
-	//glm::vec3 lookfrom(0.0f, 1.0f, 3.0f); //Cornell
+	//glm::vec3 lookfrom(0, 3, 8);
+	glm::vec3 lookfrom(0.0f, 1.0f, 3.0f); //Cornell
 
 	glm::vec3 upVector(0, 1, 0);
 	//glm::vec3 upVector(0, 0, -1);
 
-	glm::vec3 lookat(0, 0, 0);
-	//glm::vec3 lookat(0, 1.0f, 0); //Cornell
+	//glm::vec3 lookat(0, 0, 0);
+	glm::vec3 lookat(0, 1.0f, 0); //Cornell
 
 	Camera *camera = new Camera(lookfrom, lookat, upVector,
 		40.0f, (float)settings.width / (float)settings.height,
-		0.01f, glm::length(lookfrom - lookat));
+		0.001f, glm::length(lookfrom - lookat));
 	scene.setCamera(camera);
 
 	PathTracer pathTracer(settings, scene);
-	pathTracer.printPreRender();
 	pathTracer.renderScene();	
-	pathTracer.printPostRender();
 
 	std::cin.get();
 	return 0;

@@ -1,6 +1,5 @@
 #include "BvhNode.h"
 
-#include <iostream>
 #include <algorithm> 
 #include <glm/gtc/random.hpp>
 
@@ -14,14 +13,12 @@ Comparator::Comparator(int axis) : axis(axis) {
 }
 	
 bool Comparator::operator() (const Object *i, const Object *j) {
-	AABB aabbLeft, aabbRight;
-	if (!i->boundingBox(0, 0, aabbLeft) || !j->boundingBox(0, 0, aabbRight)) {
-		std::cout << "No AABB in Bounding Volume Hierarchy constructor." << std::endl;
-	}
+	const AABB &aabbLeft = i->getAABB();
+	const AABB &aabbRight = i->getAABB();
 	return aabbLeft.min[axis] < aabbRight.min[axis];
 }
 
-BvhNode::BvhNode(std::vector<const Object*> &objects, uint32 l, uint32 r, float t0, float t1) {
+BvhNode::BvhNode(std::vector<const Object*> &objects, uint32 l, uint32 r) {
 	
 	auto begin = objects.begin() + l;
 	auto end = objects.begin() + r;
@@ -40,14 +37,12 @@ BvhNode::BvhNode(std::vector<const Object*> &objects, uint32 l, uint32 r, float 
 	}
 	else {
 		uint32 center = n / 2;
-		left = new BvhNode(objects, l, l + center - 1, t0, t1);
-		right = new BvhNode(objects, l + center, r, t0, t1);
+		left = new BvhNode(objects, l, l + center - 1);
+		right = new BvhNode(objects, l + center, r);
 	}
 
-	AABB aabbLeft, aabbRight;
-	if (!left->boundingBox(t0, t1, aabbLeft) || !right->boundingBox(t0, t1, aabbRight)) {
-		std::cout << "No AABB in Bounding Volume Hierarchy constructor." << std::endl;
-	}
+	AABB &aabbLeft = left->getAABB();
+	const AABB &aabbRight = right->getAABB();
 	aabbLeft.enclose(aabbRight);
 	aabb = aabbLeft;
 }
@@ -81,9 +76,4 @@ bool BvhNode::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, 
 	}
 	statistics.bvhIntersectionsFailed++;
 	return false;
-}
-
-bool BvhNode::boundingBox(float t0, float t1, AABB &aabb) const {
-	aabb = this->aabb;
-	return true;
 }

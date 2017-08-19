@@ -34,8 +34,6 @@ public:
 	~PathTracer();
 
 	void renderScene();
-	void printPreRender() const;
-	void printPostRender() const;
 
 private:
 	const RenderSettings &settings;
@@ -50,6 +48,9 @@ private:
 
 	void renderTile(int threadId);
 	glm::vec3 computeColor(Ray &ray, uint32 depth, RenderStatistics &statistics);
+
+	void printPreRender() const;
+	void printPostRender() const;
 };
 
 inline std::ostream& operator<<(std::ostream &os, const RenderSettings &settings) {
@@ -58,6 +59,6 @@ inline std::ostream& operator<<(std::ostream &os, const RenderSettings &settings
 		"Samples: " << settings.samples << std::endl <<
 		"Max ray depth: " << settings.maxRayDepth << std::endl <<
 		"Tile size: " << settings.tileSize << std::endl <<
-		"Threads: " << settings.threads << std::endl;
+		"Threads: " << settings.threads;
 	return os;
 }

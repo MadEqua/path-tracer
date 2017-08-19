@@ -26,7 +26,6 @@ PathTracer::PathTracer(const RenderSettings &settings, Scene &scene) :
 	threadPool(settings.threads),
 	threadStatistics(settings.threads) {
 	
-	scene.initializeBvh();
 	imageBuffer = new byte[settings.width * settings.height * 3];
 	currentTile = 0;
 }
@@ -36,7 +35,11 @@ PathTracer::~PathTracer() {
 }
 
 void PathTracer::renderScene() {
-
+	
+	printPreRender();
+	scene.initializeStaticData();
+	std::cout << "Coloring the pretty pixels... :)" << std::endl;
+	
 	for (uint32 i = 0; i < settings.threads; ++i) {
 		threadPool[i] = std::thread(&PathTracer::renderTile, this, i);
 	}
@@ -58,6 +61,8 @@ void PathTracer::renderScene() {
 		stbi_write_png((settings.outputFileName + ".png").c_str(), settings.width, settings.height, 3, imageBuffer, 0);
 		break;
 	}
+
+	printPostRender();
 }
 
 void PathTracer::renderTile(int threadId) {
@@ -129,7 +134,7 @@ glm::vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &sta
 		glm::vec3 attenuation;
 
 		if (depth < settings.maxRayDepth) {
-			
+		
 			glm::vec3 emission = hitRecord.material->emit(hitRecord.u, hitRecord.v);
 			
 			if (hitRecord.material->scatter(ray, hitRecord, attenuation, scattered)) {
@@ -149,9 +154,9 @@ glm::vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &sta
 
 	return glm::vec3(0.0f);
 
-	/*glm::vec3 dir = glm::normalize(ray.direction);
-	float t = 0.5f * (dir.y + 1.0f);
-	return (1.0f - t) * glm::vec3(0.0f, 0.0f, 0.1f) + t * glm::vec3(0.25f, 0.46f, 0.78f);*/
+	//glm::vec3 dir = glm::normalize(ray.direction);
+	//float t = 0.5f * (dir.y + 1.0f);
+	//return (1.0f - t) * glm::vec3(0.0f, 0.0f, 0.1f) + t * glm::vec3(0.25f, 0.46f, 0.78f);
 
 	//return (1.0f - t) * glm::vec3(1.0f) + t * glm::vec3(0.5f, 0.7f, 1.0f);
 }
@@ -164,6 +169,8 @@ void PathTracer::printPreRender() const {
 }
 
 void PathTracer::printPostRender() const {
+	std::cout << "Finished!" << std::endl << std::endl;
+
 	for (uint32 i = 0; i < settings.threads; ++i) {
 		std::cout << "----------------- Thread " << i << " -----------------" << std::endl;
 		std::cout << threadStatistics[i] << std::endl;

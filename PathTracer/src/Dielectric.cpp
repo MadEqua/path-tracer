@@ -8,7 +8,9 @@
 #include "Ray.h"
 #include "Texture.h"
 
-Dielectric::Dielectric(float refractionIndex) : refractionIndex(refractionIndex) {
+Dielectric::Dielectric(float refractionIndex) : 
+	Material(false),
+	refractionIndex(refractionIndex) {
 }
 
 Dielectric::Dielectric(const Texture *albedo, float refractionIndex, float textureScaleU, float textureScaleV) :

@@ -5,7 +5,9 @@
 #include "Utils.h"
 #include "Texture.h"
 
-Material::Material() : albedo(nullptr), normalMap(nullptr) {
+Material::Material(bool emissive) : 
+	albedo(nullptr), normalMap(nullptr),
+	emissive(emissive) {
 }
 
 Material::Material(const Texture *albedo, float textureScaleU, float textureScaleV, bool emissive) :

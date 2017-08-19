@@ -9,7 +9,7 @@ class Texture;
 class Material
 {
 public:
-	Material();
+	Material(bool emissive);
 	Material(const Texture *albedo, float textureScaleU, float textureScaleV, bool emissive);
 	Material(const Texture *albedo, const Texture *normalMap, float textureScaleU, float textureScaleV, bool emissive);
 	virtual ~Material() = default;

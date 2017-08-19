@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "Camera.h"
 #include "BvhNode.h"
+#include "Object.h"
 
 Scene::Scene() : rootBvhNode(nullptr) {
 }
@@ -23,9 +24,21 @@ Scene::~Scene() {
 	delete camera;
 }
 
-void Scene::initializeBvh() {
+void Scene::initializeStaticData() {
+	std::cout << "Computing Transform Matrices...";
+	for (const Object *o : objects) {
+		o->computeTransformMatrices();
+	}
+	std::cout << " Done!" << std::endl;
+
+	std::cout << "Computing AABBs...";
+	for (const Object *o : objects) {
+		o->computeAABB();
+	}
+	std::cout << " Done!" << std::endl;
+	
 	std::cout << "Computing Bounding Volume Hierarchy...";
-	rootBvhNode = new BvhNode(objects, 0, objects.size() - 1, 0.0f, 1.0f);
+	rootBvhNode = new BvhNode(objects, 0, objects.size() - 1);
 	std::cout << " Done!" << std::endl << std::endl;
 }
 
@@ -47,22 +60,3 @@ bool Scene::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, Re
 	}
 	return hit;*/
 }
-
-/*bool Scene::boundingBox(float t0, float t1, AABB &aabb) const {
-	if (objects.size() < 1) return false;
-
-	AABB tempAABB;
-	bool firstTrue = objects[0]->boundingBox(t0, t1, tempAABB);
-	if (!firstTrue)
-		return false;
-	else
-		aabb = tempAABB;
-
-	for (size_t i = 1; i < objects.size(); ++i) {
-		if (objects[i]->boundingBox(t0, t1, tempAABB))
-			aabb.enclose(tempAABB);
-		else
-			return false;
-	}
-	return true;
-}*/

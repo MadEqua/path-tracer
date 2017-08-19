@@ -1,8 +1,9 @@
 #pragma once
 
+#include "AABB.h"
+
 class Ray;
 struct HitRecord;
-class AABB;
 struct RenderStatistics;
 
 class Hitable
@@ -10,7 +11,12 @@ class Hitable
 public:
 	virtual ~Hitable() = default;
 
+	//Hitables will assume rays coming in world space, and will return world space data
 	virtual bool hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, RenderStatistics &statistics) const = 0;
-	virtual bool boundingBox(float t0, float t1, AABB &aabb) const = 0; //t0 and t1 are animation times (motion blur)
+	
+	inline AABB& getAABB() const { return aabb; }
+	
+protected:
+	mutable AABB aabb;
 };
 
