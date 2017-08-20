@@ -121,6 +121,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\AABB.cpp" />
+    <ClCompile Include="src\Box.cpp" />
     <ClCompile Include="src\BvhNode.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\CheckerTexture.cpp" />
@@ -143,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AABB.h" />
+    <ClInclude Include="src\Box.h" />
     <ClInclude Include="src\BvhNode.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\CheckerTexture.h" />

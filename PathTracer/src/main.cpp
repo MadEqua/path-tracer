@@ -14,6 +14,7 @@
 #include "FileTexture.h"
 #include "LightMaterial.h"
 #include "Rectangle.h"
+#include "Box.h"
 
 #include <glm/gtc/random.hpp>
 
@@ -175,30 +176,37 @@ void initSceneCornell(Scene &scene) {
 	scene.addMaterial(metal);
 
 	const float WALL_SIZE = 4.0f;
-	scene.addObject(new Rectangle(Axis::X, 1.0f, 0.0f, WALL_SIZE, WALL_SIZE, redMat));
-	scene.addObject(new Rectangle(Axis::X, -1.0f, 180.0f, WALL_SIZE, WALL_SIZE, greenMat));
+	scene.addObject(new Rectangle(Axis::X, 1.0f, 0.0f, WALL_SIZE, WALL_SIZE, greenMat));
+	scene.addObject(new Rectangle(Axis::X, -1.0f, 180.0f, WALL_SIZE, WALL_SIZE, redMat));
 	scene.addObject(new Rectangle(Axis::Z, -1.0f, 0.0f, WALL_SIZE, WALL_SIZE, whiteMat));
 	scene.addObject(new Rectangle(Axis::Y, 2.0f, 180.0f, WALL_SIZE, WALL_SIZE, whiteMat));
 	scene.addObject(new Rectangle(Axis::Y, 0.0f, 0.0f, WALL_SIZE, WALL_SIZE, whiteMat));
 
-	const float LIGHT_SIZE = 1.0f;
+	const float LIGHT_SIZE = 1.2f;
 	scene.addObject(new Rectangle(Axis::Y, 1.99f, 0.0f, LIGHT_SIZE, LIGHT_SIZE, light));
 
-	const float SPHERE_RADIUS = 0.35f;
-	scene.addObject(new Sphere(glm::vec3(0.5f, SPHERE_RADIUS, 0.1f), SPHERE_RADIUS, di));
-	scene.addObject(new Sphere(glm::vec3(-0.5f, SPHERE_RADIUS, -0.4f), SPHERE_RADIUS, metal));
+	//const float SPHERE_RADIUS = 0.35f;
+	//scene.addObject(new Sphere(glm::vec3(0.5f, SPHERE_RADIUS, 0.1f), SPHERE_RADIUS, di));
+	//scene.addObject(new Sphere(glm::vec3(-0.5f, SPHERE_RADIUS, -0.4f), SPHERE_RADIUS, metal));
+
+	const float BOX_W = 0.6f;
+	const float SPHERE_RADIUS = 0.25f;
+	scene.addObject(new Box(glm::vec3(-0.34f, 1.2f / 2.0f, -0.4f), glm::vec3(BOX_W, 1.2f, BOX_W), glm::vec3(0.0f, 18.0f, 0.0f), whiteMat));
+	scene.addObject(new Box(glm::vec3(0.34f, BOX_W / 2.0f, 0.2f), glm::vec3(BOX_W, BOX_W, BOX_W), glm::vec3(0.0f, -18.0f, 0.0f), whiteMat));
+	scene.addObject(new Sphere(glm::vec3(-0.34f, 1.2f + SPHERE_RADIUS, -0.4f), SPHERE_RADIUS, metal));
+	scene.addObject(new Sphere(glm::vec3(0.34f, SPHERE_RADIUS, 0.2f), SPHERE_RADIUS, di));
 }
 
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 600;
-	settings.height = 600;
-	settings.samples = 500;
-	settings.maxRayDepth = 50;
+	settings.width = 302;
+	settings.height = 302;
+	settings.samples = 50;
+	settings.maxRayDepth = 16;
 	settings.tileSize = 32;
 	settings.threads = 4;
-	settings.outputFileName = "output39";
+	settings.outputFileName = "output44";
 	settings.outputFileFormat = FileFormat::PNG;
 	
 	Scene scene;
