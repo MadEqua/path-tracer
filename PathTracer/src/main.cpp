@@ -168,10 +168,10 @@ void initSceneCornell(Scene &scene) {
 	Material *light = new LightMaterial(constTexWhiteLight);
 	scene.addMaterial(light);
 
-	Material *di = new Dielectric(1.2f);
+	Material *di = new Dielectric(1.5f);
 	scene.addMaterial(di);
 
-	Material *metal = new Metal(constTexGray, 0.3f);
+	Material *metal = new Metal(constTexGray, 0.01f);
 	scene.addMaterial(metal);
 
 	const float WALL_SIZE = 4.0f;
@@ -181,30 +181,31 @@ void initSceneCornell(Scene &scene) {
 	scene.addObject(new Rectangle(Axis::Y, 2.0f, 180.0f, WALL_SIZE, WALL_SIZE, whiteMat));
 	scene.addObject(new Rectangle(Axis::Y, 0.0f, 0.0f, WALL_SIZE, WALL_SIZE, whiteMat));
 
-	const float LIGHT_SIZE = 0.7f;
-	scene.addObject(new Rectangle(Axis::Y, 1.95f, 0.0f, LIGHT_SIZE, LIGHT_SIZE, light));
+	const float LIGHT_SIZE = 1.0f;
+	scene.addObject(new Rectangle(Axis::Y, 1.99f, 0.0f, LIGHT_SIZE, LIGHT_SIZE, light));
 
-	scene.addObject(new Sphere(glm::vec3(0.5f, 0.3f, 0.1f), 0.3f, di));
-	scene.addObject(new Sphere(glm::vec3(-0.6f, 0.2f, -0.3f), 0.2f, metal));
+	const float SPHERE_RADIUS = 0.35f;
+	scene.addObject(new Sphere(glm::vec3(0.5f, SPHERE_RADIUS, 0.1f), SPHERE_RADIUS, di));
+	scene.addObject(new Sphere(glm::vec3(-0.5f, SPHERE_RADIUS, -0.4f), SPHERE_RADIUS, metal));
 }
 
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 800;
-	settings.height = 800;
-	settings.samples = 400;
+	settings.width = 600;
+	settings.height = 600;
+	settings.samples = 500;
 	settings.maxRayDepth = 50;
 	settings.tileSize = 32;
 	settings.threads = 4;
-	settings.outputFileName = "output33";
+	settings.outputFileName = "output39";
 	settings.outputFileFormat = FileFormat::PNG;
 	
 	Scene scene;
 	initSceneCornell(scene);
 
 	//glm::vec3 lookfrom(0, 3, 8);
-	glm::vec3 lookfrom(0.0f, 1.0f, 3.0f); //Cornell
+	glm::vec3 lookfrom(0.0f, 1.0f, 3.5f); //Cornell
 
 	glm::vec3 upVector(0, 1, 0);
 	//glm::vec3 upVector(0, 0, -1);

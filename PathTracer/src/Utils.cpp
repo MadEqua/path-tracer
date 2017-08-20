@@ -2,16 +2,14 @@
 
 #include <glm/glm.hpp>
 
-bool Utils::refract(const glm::vec3 &in, const glm::vec3 &normal, float niOverNt, glm::vec3 &refracted) {
-	glm::vec3 uv = glm::normalize(in);
-
-	float dt = glm::dot(uv, normal);
-	float discriminant = 1.0f - niOverNt * niOverNt * (1.0f - dt * dt);
+bool Utils::refract(const glm::vec3 &in, const glm::vec3 &normal, float indexOfRefraction, glm::vec3 &refracted) {
+	float cosi = glm::dot(in, normal);
+	float discriminant = 1.0f - indexOfRefraction * indexOfRefraction * (1.0f - cosi * cosi);
 	if (discriminant > 0.0f) {
-		refracted = niOverNt * (uv - normal * dt) - normal * sqrt(discriminant);
+		refracted = indexOfRefraction * in - (indexOfRefraction * cosi + sqrt(discriminant)) * normal;
 		return true;
 	}
-	return false;
+	return false; //total internal reflection
 }
 
 glm::vec3 Utils::rgbToSrgb(glm::vec3 &rgb) {

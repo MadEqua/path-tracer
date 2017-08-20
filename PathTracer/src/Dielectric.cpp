@@ -27,27 +27,28 @@ bool Dielectric::scatter(const Ray &in, const HitRecord &hitRecord, glm::vec3 &a
 	
 	glm::vec3 normal = getNormal(hitRecord);
 	
-	glm::vec3 outwardNormal;
+	glm::vec3 inDirection = glm::normalize(in.direction);
+	float inDotN = glm::dot(inDirection, normal);
+
+	glm::vec3 outNormal;
 	float niOverNt;
 	float cosine;
 
-	glm::vec3 inDirection = glm::normalize(in.direction);
-
-	if (glm::dot(inDirection, normal) > 0.0f) { //outside
-		outwardNormal = -normal;
+	if (inDotN > 0.0f) { //coming from inside
+		outNormal = -normal;
 		niOverNt = refractionIndex;
-		cosine = refractionIndex * glm::dot(inDirection, normal);
+		cosine = inDotN;
 	}
-	else { //inside
-		outwardNormal = normal;
+	else { //coming from outside
+		outNormal = normal;
 		niOverNt = 1.0f / refractionIndex;
-		cosine = -glm::dot(inDirection, normal);
+		cosine = -inDotN;
 	}
 
-	glm::vec3 reflected = glm::reflect(inDirection, normal);
+	glm::vec3 reflected = glm::reflect(inDirection, outNormal);
 	glm::vec3 refracted;
 
-	if (Utils::refract(inDirection, outwardNormal, niOverNt, refracted)) {
+	if (Utils::refract(inDirection, outNormal, niOverNt, refracted)) {
 		float reflectProb = Utils::shlick(cosine, refractionIndex);
 
 		if (glm::linearRand(0.0f, 1.0f) < reflectProb) {
@@ -56,9 +57,8 @@ bool Dielectric::scatter(const Ray &in, const HitRecord &hitRecord, glm::vec3 &a
 		else {
 			scattered.set(hitRecord.point, refracted);
 		}
-
 	}
-	else {
+	else { //Total internal reflection
 		scattered.set(hitRecord.point, reflected);
 	}
 
