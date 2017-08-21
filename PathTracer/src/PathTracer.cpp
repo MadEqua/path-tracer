@@ -24,20 +24,27 @@ PathTracer::PathTracer(const RenderSettings &settings, Scene &scene) :
 	settings(settings), 
 	scene(scene),
 	threadPool(settings.threads),
-	threadStatistics(settings.threads) {
-	
-	imageBuffer = new byte[settings.width * settings.height * 3];
-	currentTile = 0;
+	threadStatistics(settings.threads),
+	currentTile(0) {
 }
 
 PathTracer::~PathTracer() {
-	delete[] imageBuffer;
+	if (settings.outputFileFormat == FileFormat::HDR)
+		delete[] static_cast<float*>(imageBuffer);
+	else
+		delete[] static_cast<byte*>(imageBuffer);
 }
 
 void PathTracer::renderScene() {
 	
 	printPreRender();
 	scene.initializeStaticData();
+
+	if (settings.outputFileFormat == FileFormat::HDR)
+		imageBuffer = new float[settings.width * settings.height * 3];
+	else
+		imageBuffer = new byte[settings.width * settings.height * 3];
+
 	std::cout << "Coloring the pretty pixels... :)" << std::endl;
 	
 	for (uint32 i = 0; i < settings.threads; ++i) {
@@ -51,14 +58,17 @@ void PathTracer::renderScene() {
 	switch (settings.outputFileFormat)
 	{
 	case FileFormat::BMP:
-		stbi_write_bmp((settings.outputFileName + ".bmp").c_str(), settings.width, settings.height, 3, imageBuffer);
+		stbi_write_bmp((settings.outputFileName + ".bmp").c_str(), settings.width, settings.height, 3, static_cast<byte*>(imageBuffer));
 		break;
 	case FileFormat::JPG:
-		stbi_write_jpg((settings.outputFileName + ".jpg").c_str(), settings.width, settings.height, 3, imageBuffer, 100);
+		stbi_write_jpg((settings.outputFileName + ".jpg").c_str(), settings.width, settings.height, 3, static_cast<byte*>(imageBuffer), 100);
+		break;
+	case FileFormat::HDR:
+		stbi_write_hdr((settings.outputFileName + ".hdr").c_str(), settings.width, settings.height, 3, static_cast<float*>(imageBuffer));
 		break;
 	case FileFormat::PNG:
 	default:
-		stbi_write_png((settings.outputFileName + ".png").c_str(), settings.width, settings.height, 3, imageBuffer, 0);
+		stbi_write_png((settings.outputFileName + ".png").c_str(), settings.width, settings.height, 3, static_cast<byte*>(imageBuffer), 0);
 		break;
 	}
 
@@ -106,15 +116,23 @@ void PathTracer::renderTile(int threadId) {
 				}
 
 				color *= inverseSamples;
-				color = glm::clamp(color, 0.0f, 1.0f);
-
-				glm::vec3 srgb = Utils::rgbToSrgb(color);
 
 				uint32 invertedY = settings.height - 1 - y;
-				byte *ptr = imageBuffer + ((settings.width * invertedY) + x) * 3;
-				*ptr++ = static_cast<byte>(255.999f * srgb.r);
-				*ptr++ = static_cast<byte>(255.999f * srgb.g);
-				*ptr = static_cast<byte>(255.999f * srgb.b);
+				if (settings.outputFileFormat == FileFormat::HDR) {
+					float *ptr = static_cast<float*>(imageBuffer) + ((settings.width * invertedY) + x) * 3;
+					*ptr++ = color.r;
+					*ptr++ = color.g;
+					*ptr = color.b;
+				}
+				else {				
+					glm::vec3 srgb = Utils::rgbToSrgb(color);
+					color = glm::clamp(color, 0.0f, 1.0f);
+
+					byte *ptr = static_cast<byte*>(imageBuffer) + ((settings.width * invertedY) + x) * 3;
+					*ptr++ = static_cast<byte>(255.999f * srgb.r);
+					*ptr++ = static_cast<byte>(255.999f * srgb.g);
+					*ptr = static_cast<byte>(255.999f * srgb.b);
+				}
 
 				statistics.totalRenderedPixels++;
 			}
@@ -139,6 +157,7 @@ glm::vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &sta
 			
 			if (hitRecord.material->scatter(ray, hitRecord, attenuation, scattered)) {
 				statistics.scatteredRays++;
+				//return (hitRecord.normal + 1.0f) / 2.0f; //Normal test
 				return emission + attenuation * computeColor(scattered, depth + 1, statistics);
 			}
 			else {

@@ -189,20 +189,22 @@ void initSceneCornell(Scene &scene) {
 	//scene.addObject(new Sphere(glm::vec3(0.5f, SPHERE_RADIUS, 0.1f), SPHERE_RADIUS, di));
 	//scene.addObject(new Sphere(glm::vec3(-0.5f, SPHERE_RADIUS, -0.4f), SPHERE_RADIUS, metal));
 
+
+
 	const float BOX_W = 0.6f;
 	const float SPHERE_RADIUS = 0.25f;
 	scene.addObject(new Box(glm::vec3(-0.34f, 1.2f / 2.0f, -0.4f), glm::vec3(BOX_W, 1.2f, BOX_W), glm::vec3(0.0f, 18.0f, 0.0f), whiteMat));
 	scene.addObject(new Box(glm::vec3(0.34f, BOX_W / 2.0f, 0.2f), glm::vec3(BOX_W, BOX_W, BOX_W), glm::vec3(0.0f, -18.0f, 0.0f), whiteMat));
 	scene.addObject(new Sphere(glm::vec3(-0.34f, 1.2f + SPHERE_RADIUS, -0.4f), SPHERE_RADIUS, metal));
-	scene.addObject(new Sphere(glm::vec3(0.34f, SPHERE_RADIUS, 0.2f), SPHERE_RADIUS, di));
+	scene.addObject(new Sphere(glm::vec3(0.34f, BOX_W + SPHERE_RADIUS, 0.2f), SPHERE_RADIUS, di));
 }
 
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 302;
-	settings.height = 302;
-	settings.samples = 50;
+	settings.width = 500;
+	settings.height = 500;
+	settings.samples = 256;
 	settings.maxRayDepth = 16;
 	settings.tileSize = 32;
 	settings.threads = 4;

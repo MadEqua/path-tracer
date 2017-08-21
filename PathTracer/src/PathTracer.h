@@ -14,7 +14,7 @@ class Scene;
 class Ray;
 
 enum FileFormat {
-	BMP, PNG, JPG
+	BMP, PNG, JPG, HDR
 };
 
 struct RenderSettings {
@@ -44,7 +44,7 @@ private:
 
 	std::mutex tileMutex;
 	uint32 currentTile;
-	byte *imageBuffer;
+	void *imageBuffer; //Can be byte* or float* depending on render format
 
 	void renderTile(int threadId);
 	glm::vec3 computeColor(Ray &ray, uint32 depth, RenderStatistics &statistics);
