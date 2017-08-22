@@ -11,5 +11,5 @@ struct HitRecord {
 	glm::vec3 bitangent;
 	glm::vec3 normal;
 	float u, v; //Texture coordinates
-	Material *material;
+	const Material *material;
 };

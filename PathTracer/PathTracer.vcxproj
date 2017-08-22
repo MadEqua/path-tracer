@@ -138,6 +138,7 @@
     <ClCompile Include="src\Ray.cpp" />
     <ClCompile Include="src\Rectangle.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Sky.cpp" />
     <ClCompile Include="src\Sphere.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\ToneMapper.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="src\Rectangle.h" />
     <ClInclude Include="src\RenderStatistics.h" />
     <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\Sky.h" />
     <ClInclude Include="src\Sphere.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\stb_image_write.h" />

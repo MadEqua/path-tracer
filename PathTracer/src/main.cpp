@@ -15,6 +15,7 @@
 #include "LightMaterial.h"
 #include "Rectangle.h"
 #include "Box.h"
+#include "Sky.h"
 
 #include <glm/gtc/random.hpp>
 
@@ -87,6 +88,8 @@ void initScene(Scene &scene) {
 	scene.addObject(new Sphere(glm::vec3(0, 1, 0), 1.0f, di));
 	scene.addObject(new Sphere(glm::vec3(-4, 1, 0), 1.0f, l));
 	scene.addObject(new Sphere(glm::vec3(4, 1, 0), 1.0f, m));
+
+	scene.setSky(new Sky("../resources/stpeters_probe.hdr"));
 }
 
 void initScene2(Scene &scene) {
@@ -201,25 +204,27 @@ int main(int argc, char **argv) {
 
 	RenderSettings settings;
 	settings.width = 600;
-	settings.height = 400;
-	settings.samples = 32;
+	settings.height = 300;
+	settings.samples = 256;
 	settings.maxRayDepth = 16;
 	settings.tileSize = 32;
-	settings.threads = 3;
+	settings.threads = 4;
 
-	settings.luminosityThreshold = 0.45f;
+	settings.luminosityThreshold = 30.0f;
 	settings.gaussianKernelSize = 64;
-	settings.gaussianSigma = 15.0f;
+	settings.gaussianSigma = 2.0f;
 
-	settings.exposure = 0.18f;
+	settings.key = 0.18f;
+	settings.lumWhite = 9.0f;
 
-	settings.outputFileName = "output49";
+	settings.outputFileName = "output50";
 	settings.outputFileFormat = FileFormat::PNG;
 	
 	Scene scene;
-	initScene2(scene);
+	initScene(scene);
 
-	glm::vec3 lookfrom(0, 3, 8);
+	glm::vec3 lookfrom(13, 2, 3);
+	//glm::vec3 lookfrom(0, 3, 8);
 	//glm::vec3 lookfrom(0.0f, 1.0f, 3.5f); //Cornell
 
 	glm::vec3 upVector(0, 1, 0);

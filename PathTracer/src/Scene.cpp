@@ -7,8 +7,9 @@
 #include "Camera.h"
 #include "BvhNode.h"
 #include "Object.h"
+#include "Sky.h"
 
-Scene::Scene() : rootBvhNode(nullptr) {
+Scene::Scene() : rootBvhNode(nullptr), sky(nullptr) {
 }
 
 Scene::~Scene() {
@@ -22,6 +23,9 @@ Scene::~Scene() {
 		delete tex;
 
 	delete camera;
+
+	if(sky != nullptr)
+		delete sky;
 }
 
 void Scene::initializeStaticData() {

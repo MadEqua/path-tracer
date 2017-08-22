@@ -3,10 +3,11 @@
 #include <cmath>
 #include "Utils.h"
 
-ToneMapper::ToneMapper(const float *image, int width, int height, float exposure) :
+ToneMapper::ToneMapper(const float *image, int width, int height, float key, float lumWhite) :
 	image(image), width(width), height(height),
-	exposure(exposure),
-	averageLuminosity(0.0f) {
+	key(key),
+	averageLuminosity(0.0f),
+	lumWhiteSquared(lumWhite * lumWhite) {
 	
 	const float SMALL_FLOAT = 0.00000001f;
 	for (int y = 0; y < height; ++y) {
@@ -20,10 +21,9 @@ ToneMapper::ToneMapper(const float *image, int width, int height, float exposure
 
 glm::u8vec3 ToneMapper::mapColor(const glm::vec3 &color) {
 	float lum = Utils::getLuminanceFromRgb(color);
-	float newLum = (exposure * lum) / averageLuminosity;
+	float newLum = (key * lum) / averageLuminosity;
 
-	const float lWhite = 3.0f; //square of the smallest luminance mapped to pure white
-	newLum = (newLum * (1.0f + (newLum / lWhite))) / (1.0f + newLum);
+	newLum = (newLum * (1.0f + (newLum / lumWhiteSquared))) / (1.0f + newLum);
 
 	//the colorNew/colorOld has the same ratio as lumNew/lumOld
 	float ratio = newLum / lum;

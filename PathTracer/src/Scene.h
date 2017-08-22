@@ -10,6 +10,7 @@ class Material;
 class Texture;
 struct HitRecord;
 class BvhNode;
+class Sky;
 struct RenderStatistics;
 
 class Scene
@@ -22,7 +23,10 @@ public:
 	inline void addMaterial(const Material *material) { materials.push_back(material); }
 	inline void addTexture(const Texture *texture) { textures.push_back(texture); }
 	inline void setCamera(const Camera *camera) { this->camera = camera; }
+	inline void setSky(const Sky *sky) { this->sky = sky; }
+
 	inline const Camera* getCamera() const { return camera; }
+	inline const Sky* getSky() const { return sky; }
 
 	void initializeStaticData();
 
@@ -35,6 +39,7 @@ private:
 	std::vector<const Material*> materials;
 	std::vector<const Texture*> textures;
 	const Camera *camera;
+	const Sky *sky;
 
 	BvhNode *rootBvhNode;
 };

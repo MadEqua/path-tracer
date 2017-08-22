@@ -10,7 +10,7 @@ class Material;
 class Object : public Hitable
 {
 public:
-	explicit Object(Material *material) : material(material) {}
+	explicit Object(const Material *material) : material(material) {}
 
 	virtual bool hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, RenderStatistics &statistics) const = 0;
 
@@ -21,6 +21,6 @@ public:
 	inline Transform& getTransform() const { return transform; }
 
 protected:
-	Material *material;
+	const Material *material;
 	mutable Transform transform;
 };

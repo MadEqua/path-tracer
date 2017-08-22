@@ -32,7 +32,8 @@ struct RenderSettings {
 	float gaussianSigma;
 
 	//Tone-Mapping for Non-HDR formats
-	float exposure;
+	float key;
+	float lumWhite; //smallest luminance mapped to pure white
 
 	std::string outputFileName;
 	FileFormat outputFileFormat;

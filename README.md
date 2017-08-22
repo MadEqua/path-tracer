@@ -11,6 +11,7 @@ Multi-threaded Monte Carlo Path-Tracer in C++.
 - Normal mapping.
 - Bounding volume hierarchy (AABB) for optimized scene traversal.
 - Randomized super-sampling antialiasing.
+- Image based-lighting through HDR light probes.
 - Bloom post-processing effect to emphasize HDR rendering.
 - Tone Mapping and sRGB/Gamma correction when outputing to a non-HDR format.
 - Multi-threaded rendering.

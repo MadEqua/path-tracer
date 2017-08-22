@@ -17,6 +17,7 @@
 #include "Timer.h"
 #include "BloomPostProcess.h"
 #include "ToneMapper.h"
+#include "Sky.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -136,12 +137,16 @@ glm::vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &sta
 		}
 	}
 
-	//return glm::vec3(0.0f);
+	const Sky *sky = scene.getSky();
+	if (sky != nullptr) {
+		glm::vec3 dir = glm::normalize(ray.direction);
+		return sky->getColor(dir);
+	}
 
-	glm::vec3 dir = glm::normalize(ray.direction);
-	float t = 0.5f * (dir.y + 1.0f);
-	return (1.0f - t) * glm::vec3(0.0f, 0.0f, 0.1f) + t * glm::vec3(0.25f, 0.46f, 0.78f);
+	return glm::vec3(0.0f);
 
+	//float t = 0.5f * (dir.y + 1.0f);
+	//return (1.0f - t) * glm::vec3(0.0f, 0.0f, 0.1f) + t * glm::vec3(0.25f, 0.46f, 0.78f);
 	//return (1.0f - t) * glm::vec3(1.0f) + t * glm::vec3(0.5f, 0.7f, 1.0f);
 }
 
@@ -158,7 +163,7 @@ void PathTracer::applyPostProcessing() {
 	if (settings.outputFileFormat != FileFormat::HDR) {
 
 		byte *byteBuffer = new byte[settings.width * settings.height * 3];
-		ToneMapper toneMapper(postProcessOutput, settings.width, settings.height, settings.exposure);
+		ToneMapper toneMapper(postProcessOutput, settings.width, settings.height, settings.key, settings.lumWhite);
 		
 		for (uint32 y = 0; y < settings.height; ++y) {
 			for (uint32 x = 0; x < settings.width; ++x) {
@@ -223,6 +228,7 @@ std::ostream& operator<<(std::ostream &os, const RenderSettings &settings) {
 		"Gaussian Kernel size: " << settings.gaussianKernelSize << std::endl <<
 		"Gaussian Sigma: " << settings.gaussianSigma << std::endl <<
 		"[Tone-Mapping]:" << std::endl <<
-		"Exposure: " << settings.exposure;
+		"Key: " << settings.key << std::endl <<
+		"Luminance mapped to white: " << settings.lumWhite;
 	return os;
 }
