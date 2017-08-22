@@ -50,3 +50,31 @@ float Utils::shlick(float cosine, float refractionIdx) {
 glm::vec3 Utils::unpackNormalFromRgb(const glm::vec3 &rgb) {
 	return glm::normalize((rgb * 2.0f) - 1.0f);
 }
+
+glm::u8vec3 Utils::getPixelFromImage(const byte* image, int w, int h, int x, int y) {
+	int invertedY = h - 1 - y;
+	const byte* base = image + ((w * invertedY) + x) * 3;
+	return glm::u8vec3(*base, *(base + 1), *(base + 2));
+}
+
+glm::vec3 Utils::getPixelFromImage(const float* image, int w, int h, int x, int y) {
+	int invertedY = h - 1 - y;
+	const float* base = image + ((w * invertedY) + x) * 3;
+	return glm::vec3(*base, *(base + 1), *(base + 2));
+}
+
+void Utils::setPixelToImage(byte *image, int w, int h, int x, int y, const glm::u8vec3 &pixel) {
+	int invertedY = h - 1 - y;
+	byte* base = image + ((w * invertedY) + x) * 3;
+	*base++ = pixel.r;
+	*base++ = pixel.g;
+	*base = pixel.b;
+}
+
+void Utils::setPixelToImage(float *image, int w, int h, int x, int y, const glm::vec3 &pixel) {
+	int invertedY = h - 1 - y;
+	float* base = image + ((w * invertedY) + x) * 3;
+	*base++ = pixel.r;
+	*base++ = pixel.g;
+	*base = pixel.b;
+}

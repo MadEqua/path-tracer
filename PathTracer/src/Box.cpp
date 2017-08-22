@@ -14,7 +14,6 @@ Box::Box(const glm::vec3 &center, const glm::vec3 &dimensions, const glm::vec3 &
 	transform.yaw(rotation.y);
 	transform.pitch(rotation.x);
 	transform.roll(rotation.z);
-
 }
 
 bool Box::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, RenderStatistics &statistics) const {

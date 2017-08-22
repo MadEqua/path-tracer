@@ -15,6 +15,8 @@
 #include "Ray.h"
 #include "Types.h"
 #include "Timer.h"
+#include "BloomPostProcess.h"
+#include "ToneMapper.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -29,10 +31,7 @@ PathTracer::PathTracer(const RenderSettings &settings, Scene &scene) :
 }
 
 PathTracer::~PathTracer() {
-	if (settings.outputFileFormat == FileFormat::HDR)
-		delete[] static_cast<float*>(imageBuffer);
-	else
-		delete[] static_cast<byte*>(imageBuffer);
+	delete[] imageBuffer;
 }
 
 void PathTracer::renderScene() {
@@ -40,12 +39,9 @@ void PathTracer::renderScene() {
 	printPreRender();
 	scene.initializeStaticData();
 
-	if (settings.outputFileFormat == FileFormat::HDR)
-		imageBuffer = new float[settings.width * settings.height * 3];
-	else
-		imageBuffer = new byte[settings.width * settings.height * 3];
+	imageBuffer = new float[settings.width * settings.height * 3];
 
-	std::cout << "Coloring the pretty pixels... :)" << std::endl;
+	std::cout << "Generating some pretty pixels... :)";
 	
 	for (uint32 i = 0; i < settings.threads; ++i) {
 		threadPool[i] = std::thread(&PathTracer::renderTile, this, i);
@@ -55,23 +51,9 @@ void PathTracer::renderScene() {
 		threadPool[i].join();
 	}
 
-	switch (settings.outputFileFormat)
-	{
-	case FileFormat::BMP:
-		stbi_write_bmp((settings.outputFileName + ".bmp").c_str(), settings.width, settings.height, 3, static_cast<byte*>(imageBuffer));
-		break;
-	case FileFormat::JPG:
-		stbi_write_jpg((settings.outputFileName + ".jpg").c_str(), settings.width, settings.height, 3, static_cast<byte*>(imageBuffer), 100);
-		break;
-	case FileFormat::HDR:
-		stbi_write_hdr((settings.outputFileName + ".hdr").c_str(), settings.width, settings.height, 3, static_cast<float*>(imageBuffer));
-		break;
-	case FileFormat::PNG:
-	default:
-		stbi_write_png((settings.outputFileName + ".png").c_str(), settings.width, settings.height, 3, static_cast<byte*>(imageBuffer), 0);
-		break;
-	}
+	std::cout << " Done! " << std::endl;
 
+	applyPostProcessing();
 	printPostRender();
 }
 
@@ -116,24 +98,7 @@ void PathTracer::renderTile(int threadId) {
 				}
 
 				color *= inverseSamples;
-
-				uint32 invertedY = settings.height - 1 - y;
-				if (settings.outputFileFormat == FileFormat::HDR) {
-					float *ptr = static_cast<float*>(imageBuffer) + ((settings.width * invertedY) + x) * 3;
-					*ptr++ = color.r;
-					*ptr++ = color.g;
-					*ptr = color.b;
-				}
-				else {				
-					glm::vec3 srgb = Utils::rgbToSrgb(color);
-					color = glm::clamp(color, 0.0f, 1.0f);
-
-					byte *ptr = static_cast<byte*>(imageBuffer) + ((settings.width * invertedY) + x) * 3;
-					*ptr++ = static_cast<byte>(255.999f * srgb.r);
-					*ptr++ = static_cast<byte>(255.999f * srgb.g);
-					*ptr = static_cast<byte>(255.999f * srgb.b);
-				}
-
+				Utils::setPixelToImage(imageBuffer, settings.width, settings.height, x, y, color);
 				statistics.totalRenderedPixels++;
 			}
 		}
@@ -171,13 +136,62 @@ glm::vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &sta
 		}
 	}
 
-	return glm::vec3(0.0f);
+	//return glm::vec3(0.0f);
 
-	//glm::vec3 dir = glm::normalize(ray.direction);
-	//float t = 0.5f * (dir.y + 1.0f);
-	//return (1.0f - t) * glm::vec3(0.0f, 0.0f, 0.1f) + t * glm::vec3(0.25f, 0.46f, 0.78f);
+	glm::vec3 dir = glm::normalize(ray.direction);
+	float t = 0.5f * (dir.y + 1.0f);
+	return (1.0f - t) * glm::vec3(0.0f, 0.0f, 0.1f) + t * glm::vec3(0.25f, 0.46f, 0.78f);
 
 	//return (1.0f - t) * glm::vec3(1.0f) + t * glm::vec3(0.5f, 0.7f, 1.0f);
+}
+
+void PathTracer::applyPostProcessing() {
+
+	std::cout << "Applying bloom post-processing..." << std::endl;
+	
+	float *postProcessOutput = new float[settings.width * settings.height * 3];
+	BloomPostProcess postProcess(imageBuffer, postProcessOutput, settings.width, settings.height,
+		settings.gaussianKernelSize, settings.gaussianKernelSize,
+		settings.gaussianSigma, settings.luminosityThreshold);
+	postProcess.process();
+
+	if (settings.outputFileFormat != FileFormat::HDR) {
+
+		byte *byteBuffer = new byte[settings.width * settings.height * 3];
+		ToneMapper toneMapper(postProcessOutput, settings.width, settings.height, settings.exposure);
+		
+		for (uint32 y = 0; y < settings.height; ++y) {
+			for (uint32 x = 0; x < settings.width; ++x) {
+				glm::vec3 color = Utils::getPixelFromImage(postProcessOutput, settings.width, settings.height, x, y);
+				glm::u8vec3 byteColor = toneMapper.mapColor(color);
+				Utils::setPixelToImage(byteBuffer, settings.width, settings.height, x, y, byteColor);
+			}
+		}
+
+		switch (settings.outputFileFormat)
+		{
+		case FileFormat::BMP:
+			stbi_write_bmp((settings.outputFileName + ".bmp").c_str(), settings.width, settings.height, 3, byteBuffer);
+			break;
+		case FileFormat::JPG:
+			stbi_write_jpg((settings.outputFileName + ".jpg").c_str(), settings.width, settings.height, 3, byteBuffer, 100);
+			break;
+		case FileFormat::PNG:
+		default:
+			stbi_write_png((settings.outputFileName + ".png").c_str(), settings.width, settings.height, 3, byteBuffer, 0);
+			break;
+		}
+
+		//useful to debug tonemapping
+		//stbi_write_hdr((settings.outputFileName + ".hdr").c_str(), settings.width, settings.height, 3, postProcessOutput);
+
+		delete[] byteBuffer;
+	}
+	else {
+		stbi_write_hdr((settings.outputFileName + ".hdr").c_str(), settings.width, settings.height, 3, postProcessOutput);
+	}
+
+	delete[] postProcessOutput;
 }
 
 void PathTracer::printPreRender() const {
@@ -195,4 +209,20 @@ void PathTracer::printPostRender() const {
 		std::cout << threadStatistics[i] << std::endl;
 		std::cout << "--------------------------------------------" << std::endl;
 	}
+}
+
+std::ostream& operator<<(std::ostream &os, const RenderSettings &settings) {
+	os << "File output: " << settings.outputFileName << std::endl <<
+		"Dimensions: " << settings.width << "x" << settings.height << std::endl <<
+		"Samples: " << settings.samples << std::endl <<
+		"Max ray depth: " << settings.maxRayDepth << std::endl <<
+		"Tile size: " << settings.tileSize << std::endl <<
+		"Threads: " << settings.threads << std::endl <<
+		"[Bloom Post-Processing]:" << std::endl <<
+		"Luminosity Threshold: " << settings.luminosityThreshold << std::endl <<
+		"Gaussian Kernel size: " << settings.gaussianKernelSize << std::endl <<
+		"Gaussian Sigma: " << settings.gaussianSigma << std::endl <<
+		"[Tone-Mapping]:" << std::endl <<
+		"Exposure: " << settings.exposure;
+	return os;
 }

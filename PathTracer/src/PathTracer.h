@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <string>
 #include <mutex>
 #include <vector>
 #include <thread>
@@ -21,8 +21,19 @@ struct RenderSettings {
 	uint32 width, height;
 	uint32 samples;
 	uint32 maxRayDepth;
+	
+	//Threading
 	uint32 tileSize;
 	uint32 threads;
+
+	//Bloom Post-Processing
+	float luminosityThreshold;
+	uint32 gaussianKernelSize;
+	float gaussianSigma;
+
+	//Tone-Mapping for Non-HDR formats
+	float exposure;
+
 	std::string outputFileName;
 	FileFormat outputFileFormat;
 };
@@ -44,21 +55,14 @@ private:
 
 	std::mutex tileMutex;
 	uint32 currentTile;
-	void *imageBuffer; //Can be byte* or float* depending on render format
+	float *imageBuffer;
 
 	void renderTile(int threadId);
 	glm::vec3 computeColor(Ray &ray, uint32 depth, RenderStatistics &statistics);
+	void applyPostProcessing();
 
 	void printPreRender() const;
 	void printPostRender() const;
 };
 
-inline std::ostream& operator<<(std::ostream &os, const RenderSettings &settings) {
-	os << "File output: " << settings.outputFileName << std::endl <<
-		"Dimensions: " << settings.width << "x" << settings.height << std::endl <<
-		"Samples: " << settings.samples << std::endl <<
-		"Max ray depth: " << settings.maxRayDepth << std::endl <<
-		"Tile size: " << settings.tileSize << std::endl <<
-		"Threads: " << settings.threads;
-	return os;
-}
+std::ostream& operator<<(std::ostream &os, const RenderSettings &settings);

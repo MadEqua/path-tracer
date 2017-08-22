@@ -2,7 +2,8 @@
 
 #include <cmath>
 
-#include <glm/vec3.hpp>
+#include "Types.h"
+#include <glm/glm.hpp>
 
 const float PI = 3.14159265358979f;
 const float FLOAT_BIAS = 0.001f;
@@ -22,4 +23,12 @@ namespace Utils
 	inline float decimalPart(float v) { return v - floor(v); }
 
 	glm::vec3 unpackNormalFromRgb(const glm::vec3 &rgb);
+
+	glm::vec3 getPixelFromImage(const float* image, int w, int h, int x, int y);
+	glm::u8vec3 getPixelFromImage(const byte* image, int w, int h, int x, int y);
+	
+	void setPixelToImage(float* image, int w, int h, int x, int y, const glm::vec3 &pixel);
+	void setPixelToImage(byte* image, int w, int h, int x, int y, const glm::u8vec3 &pixel);
+
+	inline float getLuminanceFromRgb(const glm::vec3 &color) { return glm::dot(glm::vec3(0.2126f, 0.7152f, 0.0722f), color); }
 };

@@ -2,7 +2,7 @@
 
 #include "Material.h"
 
-class Lambertian :public Material
+class Lambertian : public Material
 {
 public:
 	explicit Lambertian(const Texture *albedo,  float textureScaleU = 1.0f, float textureScaleV = 1.0f);

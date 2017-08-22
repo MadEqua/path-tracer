@@ -182,14 +182,12 @@ void initSceneCornell(Scene &scene) {
 	scene.addObject(new Rectangle(Axis::Y, 2.0f, 180.0f, WALL_SIZE, WALL_SIZE, whiteMat));
 	scene.addObject(new Rectangle(Axis::Y, 0.0f, 0.0f, WALL_SIZE, WALL_SIZE, whiteMat));
 
-	const float LIGHT_SIZE = 1.2f;
+	const float LIGHT_SIZE = 1.0f;
 	scene.addObject(new Rectangle(Axis::Y, 1.99f, 0.0f, LIGHT_SIZE, LIGHT_SIZE, light));
 
 	//const float SPHERE_RADIUS = 0.35f;
 	//scene.addObject(new Sphere(glm::vec3(0.5f, SPHERE_RADIUS, 0.1f), SPHERE_RADIUS, di));
 	//scene.addObject(new Sphere(glm::vec3(-0.5f, SPHERE_RADIUS, -0.4f), SPHERE_RADIUS, metal));
-
-
 
 	const float BOX_W = 0.6f;
 	const float SPHERE_RADIUS = 0.25f;
@@ -202,26 +200,33 @@ void initSceneCornell(Scene &scene) {
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 500;
-	settings.height = 500;
-	settings.samples = 256;
+	settings.width = 600;
+	settings.height = 400;
+	settings.samples = 32;
 	settings.maxRayDepth = 16;
 	settings.tileSize = 32;
-	settings.threads = 4;
-	settings.outputFileName = "output44";
+	settings.threads = 3;
+
+	settings.luminosityThreshold = 0.45f;
+	settings.gaussianKernelSize = 64;
+	settings.gaussianSigma = 15.0f;
+
+	settings.exposure = 0.18f;
+
+	settings.outputFileName = "output49";
 	settings.outputFileFormat = FileFormat::PNG;
 	
 	Scene scene;
-	initSceneCornell(scene);
+	initScene2(scene);
 
-	//glm::vec3 lookfrom(0, 3, 8);
-	glm::vec3 lookfrom(0.0f, 1.0f, 3.5f); //Cornell
+	glm::vec3 lookfrom(0, 3, 8);
+	//glm::vec3 lookfrom(0.0f, 1.0f, 3.5f); //Cornell
 
 	glm::vec3 upVector(0, 1, 0);
 	//glm::vec3 upVector(0, 0, -1);
 
-	//glm::vec3 lookat(0, 0, 0);
-	glm::vec3 lookat(0, 1.0f, 0); //Cornell
+	glm::vec3 lookat(0, 0, 0);
+	//glm::vec3 lookat(0, 1.0f, 0); //Cornell
 
 	Camera *camera = new Camera(lookfrom, lookat, upVector,
 		40.0f, (float)settings.width / (float)settings.height,
