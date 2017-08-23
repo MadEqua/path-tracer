@@ -143,8 +143,7 @@ glm::vec3 PathTracer::computeColor(Ray &ray, uint32 depth, RenderStatistics &sta
 		return sky->getColor(dir);
 	}
 
-	return glm::vec3(0.0f);
-
+	//glm::vec3 dir = glm::normalize(ray.direction);
 	//float t = 0.5f * (dir.y + 1.0f);
 	//return (1.0f - t) * glm::vec3(0.0f, 0.0f, 0.1f) + t * glm::vec3(0.25f, 0.46f, 0.78f);
 	//return (1.0f - t) * glm::vec3(1.0f) + t * glm::vec3(0.5f, 0.7f, 1.0f);

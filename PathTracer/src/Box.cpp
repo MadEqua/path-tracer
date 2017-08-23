@@ -47,8 +47,8 @@ bool Box::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, Rend
 	glm::vec3 localPoint = localRay.pointAtParameter(hitRecord.t);
 
 	if (abs(localPoint.x) > abs(localPoint.y) && abs(localPoint.x) > abs(localPoint.z)) {
-		hitRecord.u = (hitRecord.point.z + 1.0f) / 2.0f;
-		hitRecord.v = (hitRecord.point.y + 1.0f) / 2.0f;
+		hitRecord.u = (localPoint.z + 1.0f) / 2.0f;
+		hitRecord.v = (localPoint.y + 1.0f) / 2.0f;
 
 		hitRecord.tangent = glm::vec3(0.0f, 0.0f, 1.0f);
 		hitRecord.normal = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -63,8 +63,8 @@ bool Box::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, Rend
 
 	}
 	else if (abs(localPoint.y) > abs(localPoint.x) && abs(localPoint.y) > abs(localPoint.z)) {
-		hitRecord.u = (hitRecord.point.x + 1.0f) / 2.0f;
-		hitRecord.v = (hitRecord.point.z + 1.0f) / 2.0f;
+		hitRecord.u = (localPoint.x + 1.0f) / 2.0f;
+		hitRecord.v = (localPoint.z + 1.0f) / 2.0f;
 
 		hitRecord.tangent = glm::vec3(1.0f, 0.0f, 0.0f);
 		hitRecord.normal = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -74,12 +74,12 @@ bool Box::hit(const Ray &ray, float tMin, float tMax, HitRecord &hitRecord, Rend
 			hitRecord.normal.y = -hitRecord.normal.y;
 		}
 		else {
-			hitRecord.v = 1.0f - hitRecord.v;
+			hitRecord.v = 1.0f -hitRecord.v;
 		}
 	}
 	else {
-		hitRecord.u = (hitRecord.point.x + 1.0f) / 2.0f;
-		hitRecord.v = (hitRecord.point.y + 1.0f) / 2.0f;
+		hitRecord.u = (localPoint.x + 1.0f) / 2.0f;
+		hitRecord.v = (localPoint.y + 1.0f) / 2.0f;
 
 		hitRecord.tangent = glm::vec3(1.0f, 0.0f, 0.0f);
 		hitRecord.normal = glm::vec3(0.0f, 0.0f, 1.0f);

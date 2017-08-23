@@ -21,7 +21,7 @@
 
 
 void initScene(Scene &scene) {
-	
+
 	Texture *checkerTex = new CheckerTexture(glm::vec3(0.2f, 0.3f, 0.1f), glm::vec3(0.8f));
 	Texture *testTex = new FileTexture("../resources/test3.jpg");
 	Texture *constTex = new ConstantTexture(glm::vec3(0.4f, 0.2f, 0.1f));
@@ -31,18 +31,18 @@ void initScene(Scene &scene) {
 	scene.addTexture(testTex);
 	scene.addTexture(constTex);
 	scene.addTexture(constTex2);
-	
+
 	Material *lam = new Lambertian(checkerTex, 4.0f);
 	scene.addMaterial(lam);
 	scene.addObject(new Sphere(glm::vec3(0, -1000, 0), 1000.0f, lam));
-	
+
 	for (int a = -21; a < 9; ++a) {
 		for (int b = -15; b < 8; ++b) {
 			float chooseMaterial = glm::linearRand(0.0f, 1.0f);
 			glm::vec3 center(a + 0.9f * glm::linearRand(0.0f, 1.0f), 0.2f, b + 0.9f * glm::linearRand(0.0f, 1.0f));
 			if ((center - glm::vec3(4, 0.2f, 0)).length() > 0.9f) {
 				Material *material;
-				
+
 				if (chooseMaterial < 0.7f) { //Lambertian
 
 					float chooseTex = glm::linearRand(0.0f, 1.0f);
@@ -64,7 +64,7 @@ void initScene(Scene &scene) {
 						0.5f * (1.0f + glm::linearRand(0.0f, 1.0f)),
 						0.5f * (1.0f + glm::linearRand(0.0f, 1.0f))));
 					scene.addTexture(tex);
-					
+
 					material = new Metal(tex, 0.3f * glm::linearRand(0.0f, 1.0f));
 				}
 				else {
@@ -88,8 +88,6 @@ void initScene(Scene &scene) {
 	scene.addObject(new Sphere(glm::vec3(0, 1, 0), 1.0f, di));
 	scene.addObject(new Sphere(glm::vec3(-4, 1, 0), 1.0f, l));
 	scene.addObject(new Sphere(glm::vec3(4, 1, 0), 1.0f, m));
-
-	scene.setSky(new Sky("../resources/stpeters_probe.hdr"));
 }
 
 void initScene2(Scene &scene) {
@@ -200,12 +198,69 @@ void initSceneCornell(Scene &scene) {
 	scene.addObject(new Sphere(glm::vec3(0.34f, BOX_W + SPHERE_RADIUS, 0.2f), SPHERE_RADIUS, di));
 }
 
+void initSceneSky(Scene &scene) {
+
+	Texture *constTexWhite = new ConstantTexture(glm::vec3(1.0f));
+	Texture *constTexRed = new ConstantTexture(glm::vec3(0.65f, 0.05f, 0.05f));
+	Texture *constTexGreen = new ConstantTexture(glm::vec3(0.12f, 0.45f, 0.15f));
+	Texture *constTexBlue = new ConstantTexture(glm::vec3(0.02f, 0.05f, 0.75f));
+
+	Texture *baseTex = new FileTexture("../resources/marble3.jpg");
+
+	scene.addTexture(constTexWhite);
+	scene.addTexture(constTexRed);
+	scene.addTexture(constTexGreen);
+	scene.addTexture(constTexBlue);
+	scene.addTexture(baseTex);
+
+	Material *baseMat = new Metal(baseTex, 0.5f);
+	scene.addMaterial(baseMat);
+	
+	Material *redMetal = new Metal(constTexRed, 0.0f);
+	scene.addMaterial(redMetal);
+
+	Material *greenMetal = new Metal(constTexGreen, 0.0f);
+	scene.addMaterial(greenMetal);
+
+	Material *blueMetal = new Metal(constTexBlue, 0.0f);
+	scene.addMaterial(blueMetal);
+
+	Material *di = new Dielectric(1.5f);
+	scene.addMaterial(di);
+
+	Material *mirrorMat = new Metal(constTexWhite, 0.0f);
+	scene.addMaterial(mirrorMat);
+	
+	const float BASE_SIZE = 12.0f;
+	const float BASE_H = 0.5f;
+	scene.addObject(new Box(glm::vec3(0.0f, -BASE_H/2.0f, 0.0f), glm::vec3(BASE_SIZE, BASE_H, BASE_SIZE), glm::vec3(0.0f), baseMat));
+	
+	const float SPHERE_RADIUS = 1.1f;
+	const float SPHERE_DIST = 4.4f;
+	scene.addObject(new Sphere(glm::vec3(0.0f, SPHERE_RADIUS*1.4f, 0.0f), SPHERE_RADIUS*1.4f, di));
+	scene.addObject(new Sphere(glm::vec3(SPHERE_DIST, SPHERE_RADIUS, 0.0f), SPHERE_RADIUS, blueMetal));
+	scene.addObject(new Sphere(glm::vec3(-SPHERE_DIST, SPHERE_RADIUS, 0.0f), SPHERE_RADIUS, redMetal));
+	scene.addObject(new Sphere(glm::vec3(0.0f, SPHERE_RADIUS, SPHERE_DIST), SPHERE_RADIUS, greenMetal));
+	scene.addObject(new Sphere(glm::vec3(0.0f, SPHERE_RADIUS, -SPHERE_DIST), SPHERE_RADIUS, greenMetal));
+
+	//const float BOX_SIZE = 5.0f;
+	//const float BOX_HEIGHT = 3.0f;
+	//const float BOX_THICKNESS = 0.07f;
+	//scene.addObject(new Box(glm::vec3(4.0f, BOX_HEIGHT / 2.0f, 4.0f), glm::vec3(BOX_SIZE, BOX_HEIGHT, BOX_THICKNESS), glm::vec3(0.0f, 45.0f, 0.0f), mirrorMat));
+	//scene.addObject(new Box(glm::vec3(4.0f, BOX_HEIGHT / 2.0f, -4.0f), glm::vec3(BOX_SIZE, BOX_HEIGHT, BOX_THICKNESS), glm::vec3(0.0f, -45.0f, 0.0f), mirrorMat));
+	//scene.addObject(new Box(glm::vec3(-4.0f, BOX_HEIGHT / 2.0f, -4.0f), glm::vec3(BOX_SIZE, BOX_HEIGHT, BOX_THICKNESS), glm::vec3(0.0f, 45.0f, 0.0f), mirrorMat));
+
+	//scene.setSky(new Sky("../resources/stpeters_probe.hdr"));
+	//scene.setSky(new Sky("../resources/grace_probe.hdr"));
+	scene.setSky(new Sky("../resources/rnl_probe.hdr"));
+}
+
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 600;
-	settings.height = 300;
-	settings.samples = 256;
+	settings.width = 1920;
+	settings.height = 1080;
+	settings.samples = 1024;
 	settings.maxRayDepth = 16;
 	settings.tileSize = 32;
 	settings.threads = 4;
@@ -217,15 +272,16 @@ int main(int argc, char **argv) {
 	settings.key = 0.18f;
 	settings.lumWhite = 9.0f;
 
-	settings.outputFileName = "output50";
+	settings.outputFileName = "output56";
 	settings.outputFileFormat = FileFormat::PNG;
 	
 	Scene scene;
-	initScene(scene);
+	initSceneSky(scene);
 
-	glm::vec3 lookfrom(13, 2, 3);
+	//glm::vec3 lookfrom(13, 2, 3); //scene1
 	//glm::vec3 lookfrom(0, 3, 8);
 	//glm::vec3 lookfrom(0.0f, 1.0f, 3.5f); //Cornell
+	glm::vec3 lookfrom(-7, 3.5f, 8); //sceneSky
 
 	glm::vec3 upVector(0, 1, 0);
 	//glm::vec3 upVector(0, 0, -1);
@@ -235,7 +291,7 @@ int main(int argc, char **argv) {
 
 	Camera *camera = new Camera(lookfrom, lookat, upVector,
 		40.0f, (float)settings.width / (float)settings.height,
-		0.001f, glm::length(lookfrom - lookat));
+		0.3f, glm::length(lookfrom - lookat));
 	scene.setCamera(camera);
 
 	PathTracer pathTracer(settings, scene);
