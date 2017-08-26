@@ -258,36 +258,36 @@ void initSceneSky(Scene &scene) {
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 1920;
-	settings.height = 1080;
-	settings.samples = 1024;
-	settings.maxRayDepth = 16;
+	settings.width = 500;
+	settings.height = 500;
+	settings.samples = 256;
+	settings.maxRayDepth = 8;
 	settings.tileSize = 32;
 	settings.threads = 4;
 
-	settings.luminosityThreshold = 30.0f;
-	settings.gaussianKernelSize = 64;
+	settings.luminosityThreshold = 3.0f;
+	settings.gaussianKernelSize = 128;
 	settings.gaussianSigma = 2.0f;
 
 	settings.key = 0.18f;
-	settings.lumWhite = 9.0f;
+	settings.lumWhite = 2.0f;
 
-	settings.outputFileName = "output56";
+	settings.outputFileName = "output58";
 	settings.outputFileFormat = FileFormat::PNG;
 	
 	Scene scene;
-	initSceneSky(scene);
+	initSceneCornell(scene);
 
 	//glm::vec3 lookfrom(13, 2, 3); //scene1
 	//glm::vec3 lookfrom(0, 3, 8);
-	//glm::vec3 lookfrom(0.0f, 1.0f, 3.5f); //Cornell
-	glm::vec3 lookfrom(-7, 3.5f, 8); //sceneSky
+	glm::vec3 lookfrom(0.0f, 1.0f, 3.5f); //Cornell
+	//glm::vec3 lookfrom(-7, 3.5f, 8); //sceneSky
 
 	glm::vec3 upVector(0, 1, 0);
 	//glm::vec3 upVector(0, 0, -1);
 
-	glm::vec3 lookat(0, 0, 0);
-	//glm::vec3 lookat(0, 1.0f, 0); //Cornell
+	//glm::vec3 lookat(0, 0, 0);
+	glm::vec3 lookat(0, 1.0f, 0); //Cornell
 
 	Camera *camera = new Camera(lookfrom, lookat, upVector,
 		40.0f, (float)settings.width / (float)settings.height,

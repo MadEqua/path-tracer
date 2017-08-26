@@ -19,7 +19,11 @@ bool Lambertian::scatter(const Ray &in, const HitRecord &hitRecord, glm::vec3 &a
 	//TODO: scatter with prob p and attenuation = albedo/p ??
 	glm::vec3 normal = getNormal(hitRecord);
 	glm::vec3 targetPoint = hitRecord.point + normal + glm::ballRand(1.0f);
-	scattered.set(hitRecord.point, targetPoint - hitRecord.point);
-	attenuation = albedo->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV);
+	glm::vec3 scatter = targetPoint - hitRecord.point;
+	scattered.set(hitRecord.point, scatter);
+	
+	float cos = glm::dot(normal, glm::normalize(scatter));
+	attenuation = 2.0f * albedo->value(hitRecord.u, hitRecord.v, textureScaleU, textureScaleV) * cos;
+		
 	return true;
 }

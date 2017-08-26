@@ -1,5 +1,5 @@
 # path-tracer
-Multi-threaded Monte Carlo Path-Tracer in C++.
+Multi-threaded Path-Tracer in C++.
 
 # Current Features
 - Objects: spheres, planes, boxes.

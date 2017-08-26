@@ -8,6 +8,7 @@
 #include "Utils.h"
 #include "Texture.h"
 
+
 Metal::Metal(const Texture *albedo, float fuzziness, float textureScaleU, float textureScaleV) : 
 	Metal(albedo, nullptr, fuzziness, textureScaleU, textureScaleV) {
 }
