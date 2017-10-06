@@ -35,19 +35,19 @@ void initScene(Scene &scene) {
 	Material *lam = new Lambertian(checkerTex, 4.0f);
 	scene.addMaterial(lam);
 	scene.addObject(new Sphere(glm::vec3(0, -1000, 0), 1000.0f, lam));
-
+	
 	for (int a = -21; a < 9; ++a) {
-		for (int b = -15; b < 8; ++b) {
+		for (int b = -25; b < 8; ++b) {
 			float chooseMaterial = glm::linearRand(0.0f, 1.0f);
 			glm::vec3 center(a + 0.9f * glm::linearRand(0.0f, 1.0f), 0.2f, b + 0.9f * glm::linearRand(0.0f, 1.0f));
 			if ((center - glm::vec3(4, 0.2f, 0)).length() > 0.9f) {
 				Material *material;
 
-				if (chooseMaterial < 0.7f) { //Lambertian
+				if (chooseMaterial < 0.6f) { //Lambertian
 
 					float chooseTex = glm::linearRand(0.0f, 1.0f);
 					Texture *tex;
-					if (chooseTex < 0.25f) {
+					if (chooseTex < 0.1f) {
 						tex = testTex;
 					}
 					else {
@@ -58,7 +58,7 @@ void initScene(Scene &scene) {
 					}
 					material = new Lambertian(tex);
 				}
-				else if (chooseMaterial < 0.95f) { //Metal
+				else if (chooseMaterial < 0.9f) { //Metal
 
 					Texture *tex = new ConstantTexture(glm::vec3(0.5f * (1.0f + glm::linearRand(0.0f, 1.0f)),
 						0.5f * (1.0f + glm::linearRand(0.0f, 1.0f)),
@@ -88,6 +88,8 @@ void initScene(Scene &scene) {
 	scene.addObject(new Sphere(glm::vec3(0, 1, 0), 1.0f, di));
 	scene.addObject(new Sphere(glm::vec3(-4, 1, 0), 1.0f, l));
 	scene.addObject(new Sphere(glm::vec3(4, 1, 0), 1.0f, m));
+
+	scene.setSky(new Sky("../resources/rnl_probe.hdr"));
 }
 
 void initScene2(Scene &scene) {
@@ -258,40 +260,43 @@ void initSceneSky(Scene &scene) {
 int main(int argc, char **argv) {
 
 	RenderSettings settings;
-	settings.width = 500;
-	settings.height = 500;
-	settings.samples = 256;
+	settings.width = 1280;
+	settings.height = 800;
+	settings.samples = 1024;
 	settings.maxRayDepth = 8;
 	settings.tileSize = 32;
-	settings.threads = 4;
+	settings.threads = 3;
 
-	settings.luminosityThreshold = 3.0f;
-	settings.gaussianKernelSize = 128;
-	settings.gaussianSigma = 2.0f;
+	settings.luminosityThreshold = 1.5f;
+	settings.gaussianKernelSize = 96;
+	settings.gaussianSigma = 6.0f;
 
 	settings.key = 0.18f;
-	settings.lumWhite = 2.0f;
+	settings.lumWhite = 5.0f;
 
-	settings.outputFileName = "output58";
-	settings.outputFileFormat = FileFormat::PNG;
+	settings.outputFileName = "output64";
+	settings.outputFileFormat = FileFormat::JPG;
 	
 	Scene scene;
-	initSceneCornell(scene);
+	initScene(scene);
 
-	//glm::vec3 lookfrom(13, 2, 3); //scene1
+	glm::vec3 lookfrom(13, 2, 3); //scene1
 	//glm::vec3 lookfrom(0, 3, 8);
-	glm::vec3 lookfrom(0.0f, 1.0f, 3.5f); //Cornell
+	//glm::vec3 lookfrom(0.0f, 1.0f, 3.5f); //Cornell
 	//glm::vec3 lookfrom(-7, 3.5f, 8); //sceneSky
 
 	glm::vec3 upVector(0, 1, 0);
 	//glm::vec3 upVector(0, 0, -1);
 
-	//glm::vec3 lookat(0, 0, 0);
-	glm::vec3 lookat(0, 1.0f, 0); //Cornell
+	glm::vec3 lookat(0, 0, 0);
+	//glm::vec3 lookat(0, 1.0f, 0); //Cornell
+
+	const float aperture = 0.1f;
+	const float fovy = 20.0f;
 
 	Camera *camera = new Camera(lookfrom, lookat, upVector,
-		40.0f, (float)settings.width / (float)settings.height,
-		0.3f, glm::length(lookfrom - lookat));
+		fovy, (float)settings.width / (float)settings.height,
+		aperture, glm::length(lookfrom - lookat));
 	scene.setCamera(camera);
 
 	PathTracer pathTracer(settings, scene);
