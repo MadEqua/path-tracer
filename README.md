@@ -18,9 +18,10 @@ Multi-threaded Path-Tracer in C++.
 - Detailed render statistics feedback.
 
 # Example Renders
-![](http://bmlourenco.com/uploads/3/8/6/2/3862236/2716482_orig.jpg)
-![](http://bmlourenco.com/uploads/3/8/6/2/3862236/3414322_orig.jpg)
-![](http://bmlourenco.com/uploads/3/8/6/2/3862236/5249411_orig.jpg)
+![](http://bmlourenco.com/public/images/path-tracer/1.jpg)
+![](http://bmlourenco.com/public/images/path-tracer/2.jpg)
+![](http://bmlourenco.com/public/images/path-tracer/3.jpg)
+![](http://bmlourenco.com/public/images/path-tracer/5.jpg)
 
 # License
 Licensed under the MIT license, see [LICENSE](https://github.com/MadEqua/path-tracer/blob/master/LICENSE) for details.
